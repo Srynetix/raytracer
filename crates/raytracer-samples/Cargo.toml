@@ -1,0 +1,8 @@
+[package]
+name = "raytracer-samples"
+version = "0.0.0"
+edition = "2021"
+
+[dependencies]
+raytracer-core = { path = "../raytracer-core" }
+raytracer-image-renderer = { path = "../raytracer-image-renderer" }

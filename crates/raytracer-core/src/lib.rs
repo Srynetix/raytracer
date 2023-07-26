@@ -1,9 +1,20 @@
+mod camera;
 mod color;
+mod hit_record;
+mod hittable;
 mod image;
+pub mod primitives;
 mod ray;
+mod scene;
 mod vec3;
+mod world;
 
+pub use camera::Camera;
 pub use color::Color;
+pub use hit_record::HitRecord;
+pub use hittable::Hittable;
 pub use image::Image;
 pub use ray::Ray;
+pub use scene::Scene;
 pub use vec3::Vec3;
+pub use world::World;

@@ -13,12 +13,16 @@ impl Color {
         Self::from_rgba(r, g, b, 255)
     }
 
-    pub fn from_floating_rgb(r: f32, g: f32, b: f32) -> Self {
-        Self::from_rgb((r * 255.0) as u8, (g * 255.0) as u8, (b * 255.0) as u8)
+    pub fn from_floating_rgb(r: f64, g: f64, b: f64) -> Self {
+        Self::from_rgb(Self::f64_to_u8(r), Self::f64_to_u8(g), Self::f64_to_u8(b))
     }
 
     pub fn from_rgba(r: u8, g: u8, b: u8, a: u8) -> Self {
-        Self { r, b, g, a }
+        Self { r, g, b, a }
+    }
+
+    fn f64_to_u8(value: f64) -> u8 {
+        (value * 255.0).clamp(0.0, 255.0) as u8
     }
 }
 
@@ -30,7 +34,7 @@ impl Mul<f64> for Color {
             r: (self.r as f64 * rhs).clamp(0.0, 255.0) as u8,
             g: (self.g as f64 * rhs).clamp(0.0, 255.0) as u8,
             b: (self.b as f64 * rhs).clamp(0.0, 255.0) as u8,
-            a: (self.a as f64 * rhs).clamp(0.0, 255.0) as u8,
+            a: self.a,
         }
     }
 }

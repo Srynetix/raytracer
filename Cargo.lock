@@ -19,3 +19,11 @@ version = "0.0.0"
 dependencies = [
  "raytracer-core",
 ]
+
+[[package]]
+name = "raytracer-samples"
+version = "0.0.0"
+dependencies = [
+ "raytracer-core",
+ "raytracer-image-renderer",
+]
