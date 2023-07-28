@@ -1,6 +1,6 @@
-use raytracer_core::{Color, Image};
+use raytracer_core::{Color, Image, Renderer};
 
-use crate::{ppm::PpmRenderer, renderer::Renderer};
+use crate::ppm::PpmRenderer;
 
 macro_rules! assert_eq_ppm {
     ($content: expr, $target: literal) => {
@@ -26,20 +26,24 @@ fn source_image(width: u32) -> Image {
 
 #[test]
 fn test_ppm_output_2x4() {
-    let mut writer: Vec<u8> = Vec::new();
-    let renderer = PpmRenderer::new();
+    let mut renderer = PpmRenderer::new(Vec::new());
     let image = source_image(2);
 
-    renderer.render(&mut writer, &image).unwrap();
-    assert_eq_ppm!(String::from_utf8(writer).unwrap(), "./2x4.ppm");
+    renderer.render(&image).unwrap();
+    assert_eq_ppm!(
+        String::from_utf8(renderer.into_inner()).unwrap(),
+        "./2x4.ppm"
+    );
 }
 
 #[test]
 fn test_ppm_output_4x2() {
-    let mut writer: Vec<u8> = Vec::new();
-    let renderer = PpmRenderer::new();
+    let mut renderer = PpmRenderer::new(Vec::new());
     let image = source_image(4);
 
-    renderer.render(&mut writer, &image).unwrap();
-    assert_eq_ppm!(String::from_utf8(writer).unwrap(), "./4x2.ppm");
+    renderer.render(&image).unwrap();
+    assert_eq_ppm!(
+        String::from_utf8(renderer.into_inner()).unwrap(),
+        "./4x2.ppm"
+    );
 }

@@ -1,7 +1,7 @@
-use raytracer_core::{Color, Image};
-use raytracer_image_renderer::{ppm::PpmRenderer, Renderer};
+use raytracer_core::{Color, Image, Renderer};
+use raytracer_image_renderer::ppm::PpmRenderer;
 
-use crate::assert_eq_ppm;
+use crate::assert_ppm_snapshot;
 
 fn source_gradient_image() -> Image {
     let width = 256;
@@ -23,10 +23,9 @@ fn source_gradient_image() -> Image {
 
 #[test]
 fn run() {
-    let mut writer: Vec<u8> = Vec::new();
-    let renderer = PpmRenderer::new();
+    let mut renderer = PpmRenderer::new(Vec::new());
     let image = source_gradient_image();
 
-    renderer.render(&mut writer, &image).unwrap();
-    assert_eq_ppm!(String::from_utf8(writer).unwrap(), "./basic_gradient.ppm");
+    renderer.render(&image).unwrap();
+    assert_ppm_snapshot(renderer, "./src/samples/basic_gradient.ppm");
 }

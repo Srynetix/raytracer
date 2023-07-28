@@ -17,3 +17,7 @@ lint:
 # Test
 test:
 	@cargo test
+
+# Run
+run:
+	@cargo run

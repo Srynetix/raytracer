@@ -10,8 +10,34 @@ impl World {
         Self { hittables: vec![] }
     }
 
+    pub fn builder() -> WorldBuilder {
+        WorldBuilder::new()
+    }
+
     pub fn add_hittable(&mut self, element: Box<dyn Hittable>) {
         self.hittables.push(element)
+    }
+}
+
+#[derive(Default)]
+pub struct WorldBuilder {
+    hittables: Vec<Box<dyn Hittable>>,
+}
+
+impl WorldBuilder {
+    pub fn new() -> Self {
+        Default::default()
+    }
+
+    pub fn with_hittable(mut self, element: Box<dyn Hittable>) -> Self {
+        self.hittables.push(element);
+        self
+    }
+
+    pub fn build(self) -> World {
+        World {
+            hittables: self.hittables,
+        }
     }
 }
 
