@@ -46,6 +46,13 @@ impl Vec3 {
         *self - 2.0 * self.dot(normal) * normal
     }
 
+    pub fn refract(&self, normal: Self, ratio: f64) -> Self {
+        let cos_theta = (-*self).dot(normal).min(1.0);
+        let perp = ratio * (*self + cos_theta * normal);
+        let parallel = -(1.0 - perp.length_squared()).abs().sqrt() * normal;
+        perp + parallel
+    }
+
     pub fn is_near_zero(&self) -> bool {
         let s = 1e-8;
         self.x.abs() < s && self.y.abs() < s && self.z.abs() < s

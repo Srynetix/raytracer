@@ -1,7 +1,9 @@
 use raytracer_core::{primitives::Sphere, Color, Renderer, Scene, SeedType, Vec3, World};
 use raytracer_gpu_renderer::GpuRenderer;
 use raytracer_samples::samples::{
-    materials::{lambertian::LambertianMaterial, metal::MetalMaterial},
+    materials::{
+        dielectric::DielectricMaterial, lambertian::LambertianMaterial, metal::MetalMaterial,
+    },
     shaders::simple_material::SimpleMaterialShader,
 };
 use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
@@ -29,23 +31,24 @@ fn main() {
                 .with_collider({
                     let mut sphere = Sphere::new(Vec3::from_xyz(0.0, 0.0, -1.0), 0.5);
                     sphere.set_material(Box::new(LambertianMaterial::new(
-                        Color::from_floating_rgb(0.7, 0.3, 0.3),
+                        Color::from_floating_rgb(0.1, 0.2, 0.5),
                     )));
                     Box::new(sphere)
                 })
                 .with_collider({
                     let mut sphere = Sphere::new(Vec3::from_xyz(-1.0, 0.0, -1.0), 0.5);
-                    sphere.set_material(Box::new(MetalMaterial::new(
-                        Color::from_floating_rgb(0.8, 0.8, 0.8),
-                        0.3,
-                    )));
+                    // sphere.set_material(Box::new(MetalMaterial::new(
+                    //     Color::from_floating_rgb(0.8, 0.8, 0.8),
+                    //     0.3,
+                    // )));
+                    sphere.set_material(Box::new(DielectricMaterial::new(1.5)));
                     Box::new(sphere)
                 })
                 .with_collider({
                     let mut sphere = Sphere::new(Vec3::from_xyz(1.0, 0.0, -1.0), 0.5);
                     sphere.set_material(Box::new(MetalMaterial::new(
                         Color::from_floating_rgb(0.8, 0.6, 0.2),
-                        1.0,
+                        0.0,
                     )));
                     Box::new(sphere)
                 })
