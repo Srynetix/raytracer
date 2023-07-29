@@ -1,6 +1,8 @@
 mod basic_gradient;
 mod glass_sphere;
 mod hollow_glass_sphere;
+mod point_of_view;
+mod random_spheres;
 mod ray_diffuse;
 mod ray_gradient;
 mod ray_sphere;

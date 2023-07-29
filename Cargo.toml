@@ -3,6 +3,6 @@ members = [
     "crates/raytracer-cli",
     "crates/raytracer-core",
     "crates/raytracer-image-renderer",
-    "crates/raytracer-gpu-renderer",
+    "crates/raytracer-window-renderer",
     "crates/raytracer-samples",
 ]

@@ -6,7 +6,7 @@ use crate::{assert_ppm_snapshot, sample_scene_builder, samples::shaders::normal:
 #[test]
 fn run() {
     let mut renderer = PpmRenderer::new(Vec::new());
-    let mut scene = sample_scene_builder().build();
+    let scene = sample_scene_builder().build();
     let image = scene.render(NormalShader);
 
     renderer.render(&image).unwrap();

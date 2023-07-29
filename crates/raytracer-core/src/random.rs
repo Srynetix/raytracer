@@ -3,6 +3,7 @@ use std::ops::{Deref, DerefMut};
 use rand::{thread_rng, RngCore, SeedableRng};
 use rand_chacha::ChaCha8Rng;
 
+#[derive(Clone, Copy, Debug)]
 pub enum SeedType {
     Random,
     Fixed(u64),

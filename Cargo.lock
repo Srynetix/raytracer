@@ -1267,9 +1267,9 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "raytracer-core",
- "raytracer-gpu-renderer",
  "raytracer-image-renderer",
  "raytracer-samples",
+ "raytracer-window-renderer",
  "tracing-subscriber",
 ]
 
@@ -1285,15 +1285,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "raytracer-gpu-renderer"
-version = "0.0.0"
-dependencies = [
- "pixels",
- "raytracer-core",
- "winit",
-]
-
-[[package]]
 name = "raytracer-image-renderer"
 version = "0.0.0"
 dependencies = [
@@ -1306,6 +1297,15 @@ version = "0.0.0"
 dependencies = [
  "raytracer-core",
  "raytracer-image-renderer",
+]
+
+[[package]]
+name = "raytracer-window-renderer"
+version = "0.0.0"
+dependencies = [
+ "pixels",
+ "raytracer-core",
+ "winit",
 ]
 
 [[package]]

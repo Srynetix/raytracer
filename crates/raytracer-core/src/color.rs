@@ -1,4 +1,6 @@
-use std::ops::{Add, AddAssign, Div, DivAssign, Mul};
+use std::ops::{Add, AddAssign, Div, DivAssign, Mul, RangeInclusive};
+
+use rand::{distributions::Standard, prelude::Distribution, Rng};
 
 #[derive(Clone, Copy, PartialEq, PartialOrd, Debug)]
 pub struct Color {
@@ -77,6 +79,15 @@ impl Color {
             g: f(self.g),
             b: f(self.b),
             a: self.a,
+        }
+    }
+
+    pub fn gen_range<R: Rng>(rng: &mut R, range: RangeInclusive<f64>) -> Self {
+        Self {
+            r: rng.gen_range(range.clone()),
+            g: rng.gen_range(range.clone()),
+            b: rng.gen_range(range),
+            a: 1.0,
         }
     }
 }
@@ -158,6 +169,17 @@ impl Div<Color> for f64 {
 
     fn div(self, rhs: Color) -> Self::Output {
         rhs / self
+    }
+}
+
+impl Distribution<Color> for Standard {
+    fn sample<R: rand::Rng + ?Sized>(&self, rng: &mut R) -> Color {
+        Color {
+            r: rng.gen_range(0.0..=1.0),
+            g: rng.gen_range(0.0..=1.0),
+            b: rng.gen_range(0.0..=1.0),
+            a: 1.0,
+        }
     }
 }
 

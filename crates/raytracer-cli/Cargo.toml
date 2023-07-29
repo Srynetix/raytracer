@@ -6,7 +6,7 @@ edition = "2021"
 [dependencies]
 raytracer-core = { path = "../raytracer-core" }
 raytracer-image-renderer = { path = "../raytracer-image-renderer" }
-raytracer-gpu-renderer = { path = "../raytracer-gpu-renderer" }
+raytracer-window-renderer = { path = "../raytracer-window-renderer" }
 raytracer-samples = { path = "../raytracer-samples" }
 clap = { version = "4.3.19", features = ["derive"] }
 tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }

@@ -8,7 +8,7 @@ use crate::{
 #[test]
 fn run() {
     let mut renderer = PpmRenderer::new(Vec::new());
-    let mut scene = sample_scene_builder().build();
+    let scene = sample_scene_builder().build();
     let image = scene.render(SimpleSphereShader);
 
     renderer.render(&image).unwrap();

@@ -5,7 +5,7 @@ use raytracer_image_renderer::ppm::PpmRenderer;
 #[test]
 fn run() {
     let mut renderer = PpmRenderer::new(Vec::new());
-    let mut scene = sample_scene_builder()
+    let scene = sample_scene_builder()
         .with_antialias(16)
         .with_max_depth(8)
         .with_world(

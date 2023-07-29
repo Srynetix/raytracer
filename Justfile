@@ -16,7 +16,7 @@ lint:
 
 # Test
 test:
-	@cargo test
+	@cargo test --release
 
 # Run
 run:

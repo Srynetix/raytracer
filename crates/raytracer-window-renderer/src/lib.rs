@@ -8,9 +8,9 @@ use winit::{
 };
 
 #[derive(Default)]
-pub struct GpuRenderer;
+pub struct WindowRenderer;
 
-impl GpuRenderer {
+impl WindowRenderer {
     pub fn new() -> Self {
         Default::default()
     }
@@ -23,13 +23,13 @@ impl GpuRenderer {
     }
 }
 
-impl Renderer for GpuRenderer {
+impl Renderer for WindowRenderer {
     fn render(&mut self, image: &raytracer_core::Image) -> Result<(), std::io::Error> {
         let event_loop = EventLoop::new();
         let window = WindowBuilder::new()
             .with_inner_size(PhysicalSize::new(image.width(), image.height()))
             .with_resizable(false)
-            .with_title("raytracer-gpu-renderer")
+            .with_title("raytracer-window-renderer")
             .with_enabled_buttons(WindowButtons::CLOSE | WindowButtons::MINIMIZE)
             .build(&event_loop)
             .unwrap();

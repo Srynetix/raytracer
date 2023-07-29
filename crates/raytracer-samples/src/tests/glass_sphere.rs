@@ -14,7 +14,7 @@ use crate::{
 #[test]
 fn test() {
     let mut renderer = PpmRenderer::new(Vec::new());
-    let mut scene = Scene::builder((512, 288).into())
+    let scene = Scene::builder((512, 288).into())
         .with_seed(SeedType::Fixed(1234567890))
         .with_antialias(16)
         .with_max_depth(16)
