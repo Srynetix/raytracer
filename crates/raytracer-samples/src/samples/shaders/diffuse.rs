@@ -1,27 +1,29 @@
+use std::cell::RefCell;
+
 use raytracer_core::{Collider, Color, Ray, RayShader, RngWrapper, SeedType, Vec3};
 
 pub struct DiffuseShader {
-    rng: RngWrapper,
+    rng: RefCell<RngWrapper>,
 }
 
 impl DiffuseShader {
     pub fn new(seed_type: SeedType) -> Self {
         Self {
-            rng: RngWrapper::new(seed_type),
+            rng: RefCell::new(RngWrapper::new(seed_type)),
         }
     }
 }
 
 impl RayShader for DiffuseShader {
-    fn ray_color(&mut self, ray: &Ray, collider: &dyn Collider, depth: u32) -> Color {
+    fn ray_color(&self, ray: &Ray, collider: &dyn Collider, depth: u32) -> Color {
         if depth == 0 {
             return Color::black();
         }
 
-        if let Some((record, _material)) = collider.hit(ray, 0.001, f64::MAX) {
+        if let Some(record) = collider.hit(ray, 0.001, f64::MAX) {
             let target = record.point
                 + record.normal
-                + Vec3::gen_random_in_unit_sphere_normalized(&mut self.rng);
+                + Vec3::gen_random_in_unit_sphere_normalized(&mut *self.rng.borrow_mut());
             return 0.5
                 * self.ray_color(
                     &Ray::from_points(record.point, target - record.point),

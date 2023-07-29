@@ -3,13 +3,13 @@ use raytracer_core::{Collider, Color, Ray, RayShader};
 pub struct SimpleMaterialShader;
 
 impl RayShader for SimpleMaterialShader {
-    fn ray_color(&mut self, ray: &Ray, collider: &dyn Collider, depth: u32) -> Color {
+    fn ray_color(&self, ray: &Ray, collider: &dyn Collider, depth: u32) -> Color {
         if depth == 0 {
             return Color::black();
         }
 
-        if let Some((record, material)) = collider.hit(ray, 0.001, f64::MAX) {
-            if let Some(mut mat) = material {
+        if let Some(record) = collider.hit(ray, 0.001, f64::MAX) {
+            if let Some(mat) = record.material {
                 if let Some(result) = mat.scatter(ray, &record) {
                     return result.attenuation
                         * self.ray_color(&result.scattered, collider, depth - 1);

@@ -29,12 +29,7 @@ impl Sphere {
 }
 
 impl Collider for Sphere {
-    fn hit(
-        &self,
-        ray: &Ray,
-        t_min: f64,
-        t_max: f64,
-    ) -> Option<(HitRecord, Option<Box<dyn Material>>)> {
+    fn hit<'a>(&'a self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord<'a>> {
         let oc = ray.origin() - self.center;
         let a = ray.direction().length_squared();
         let half_b = oc.dot(ray.direction());
@@ -63,10 +58,11 @@ impl Collider for Sphere {
         let mut record = HitRecord {
             point: hit_point,
             t: hit_t,
+            material: self.material.as_deref(),
             ..Default::default()
         };
         record.set_face_normal(ray, hit_normal);
 
-        Some((record, self.material.clone()))
+        Some(record)
     }
 }

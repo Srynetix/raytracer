@@ -26,22 +26,22 @@ fn generate_snapshot(data: &str, path: &Path) {
     std::fs::write(path, data).unwrap()
 }
 
-pub fn assert_ppm_snapshot<P: AsRef<Path>>(renderer: PpmRenderer<Vec<u8>>, path: P) {
+pub fn assert_ppm_snapshot(renderer: PpmRenderer<Vec<u8>>, name: &'static str) {
     let data = renderer.into_inner();
     let str_data = std::str::from_utf8(&data).unwrap();
-    let path = path.as_ref();
+    let path = Path::new("./src/tests").join(name);
     let should_override = std::env::var("RT_PPM_OVERRIDE").unwrap_or_default() == "1";
 
-    match std::fs::metadata(path) {
+    match std::fs::metadata(&path) {
         Ok(_) => {
             if should_override {
-                generate_snapshot(str_data, path);
+                generate_snapshot(str_data, &path);
             } else {
-                compare_snapshot(str_data, path);
+                compare_snapshot(str_data, &path);
             }
         }
         Err(_) => {
-            generate_snapshot(str_data, path);
+            generate_snapshot(str_data, &path);
         }
     }
 }

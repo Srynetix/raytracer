@@ -12,5 +12,5 @@ fn run() {
     let image = scene.render(SimpleSphereShader);
 
     renderer.render(&image).unwrap();
-    assert_ppm_snapshot(renderer, "./src/samples/ray_sphere.ppm");
+    assert_ppm_snapshot(renderer, "ray_sphere.ppm");
 }

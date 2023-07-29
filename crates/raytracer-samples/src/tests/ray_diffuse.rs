@@ -6,8 +6,8 @@ use raytracer_image_renderer::ppm::PpmRenderer;
 fn run() {
     let mut renderer = PpmRenderer::new(Vec::new());
     let mut scene = sample_scene_builder()
-        .with_antialias(100)
-        .with_max_depth(50)
+        .with_antialias(16)
+        .with_max_depth(8)
         .with_world(
             World::builder()
                 .with_collider(Box::new(Sphere::new(Vec3::from_xyz(0.0, 0.0, -1.0), 0.5)))
@@ -22,5 +22,5 @@ fn run() {
     let image = scene.render(DiffuseShader::new(SeedType::Fixed(1234567890)));
     renderer.render(&image).unwrap();
 
-    assert_ppm_snapshot(renderer, "./src/samples/ray_diffuse.ppm");
+    assert_ppm_snapshot(renderer, "ray_diffuse.ppm");
 }

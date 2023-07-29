@@ -1,10 +1,5 @@
-use crate::{hit_record::HitRecord, Material, Ray};
+use crate::{hit_record::HitRecord, Ray};
 
 pub trait Collider {
-    fn hit(
-        &self,
-        ray: &Ray,
-        t_min: f64,
-        t_max: f64,
-    ) -> Option<(HitRecord, Option<Box<dyn Material>>)>;
+    fn hit<'a>(&'a self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord<'a>>;
 }

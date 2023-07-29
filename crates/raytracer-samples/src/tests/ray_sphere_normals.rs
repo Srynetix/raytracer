@@ -10,5 +10,5 @@ fn run() {
     let image = scene.render(NormalShader);
 
     renderer.render(&image).unwrap();
-    assert_ppm_snapshot(renderer, "./src/samples/ray_sphere_normals.ppm");
+    assert_ppm_snapshot(renderer, "ray_sphere_normals.ppm");
 }

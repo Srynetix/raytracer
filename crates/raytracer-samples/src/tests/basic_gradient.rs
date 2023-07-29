@@ -24,5 +24,5 @@ fn run() {
     let image = Image::from_pixels(width, pixels);
 
     renderer.render(&image).unwrap();
-    assert_ppm_snapshot(renderer, "./src/samples/basic_gradient.ppm");
+    assert_ppm_snapshot(renderer, "basic_gradient.ppm");
 }

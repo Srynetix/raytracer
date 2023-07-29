@@ -1,18 +1,20 @@
+use std::cell::RefCell;
+
 use raytracer_core::{Collider, Color, Ray, RayShader, RngWrapper, SeedType, Vec3};
 
 pub struct DiffuseHemisphereShader {
-    rng: RngWrapper,
+    rng: RefCell<RngWrapper>,
 }
 
 impl DiffuseHemisphereShader {
     pub fn new(seed_type: SeedType) -> Self {
         Self {
-            rng: RngWrapper::new(seed_type),
+            rng: RefCell::new(RngWrapper::new(seed_type)),
         }
     }
 
-    fn gen_random_in_hemisphere(&mut self, normal: Vec3) -> Vec3 {
-        let value = Vec3::gen_random_in_unit_sphere(&mut self.rng);
+    fn gen_random_in_hemisphere(&self, normal: Vec3) -> Vec3 {
+        let value = Vec3::gen_random_in_unit_sphere(&mut *self.rng.borrow_mut());
         if value.dot(normal) > 0.0 {
             value
         } else {
@@ -22,12 +24,12 @@ impl DiffuseHemisphereShader {
 }
 
 impl RayShader for DiffuseHemisphereShader {
-    fn ray_color(&mut self, ray: &Ray, collider: &dyn Collider, depth: u32) -> Color {
+    fn ray_color(&self, ray: &Ray, collider: &dyn Collider, depth: u32) -> Color {
         if depth == 0 {
             return Color::black();
         }
 
-        if let Some((record, _material)) = collider.hit(ray, 0.001, f64::MAX) {
+        if let Some(record) = collider.hit(ray, 0.001, f64::MAX) {
             let target = record.point + self.gen_random_in_hemisphere(record.normal);
 
             return 0.5

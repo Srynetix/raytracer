@@ -15,8 +15,8 @@ fn main() {
     let mut renderer = GpuRenderer::new();
     let mut scene = Scene::builder((512, 288).into())
         .with_seed(SeedType::Fixed(1234567890))
-        .with_antialias(8)
-        .with_max_depth(32)
+        .with_antialias(100)
+        .with_max_depth(50)
         .with_world(
             World::builder()
                 .with_collider({
@@ -35,16 +35,18 @@ fn main() {
                 })
                 .with_collider({
                     let mut sphere = Sphere::new(Vec3::from_xyz(-1.0, 0.0, -1.0), 0.5);
-                    sphere.set_material(Box::new(MetalMaterial::new(Color::from_floating_rgb(
-                        0.8, 0.8, 0.8,
-                    ))));
+                    sphere.set_material(Box::new(MetalMaterial::new(
+                        Color::from_floating_rgb(0.8, 0.8, 0.8),
+                        0.3,
+                    )));
                     Box::new(sphere)
                 })
                 .with_collider({
                     let mut sphere = Sphere::new(Vec3::from_xyz(1.0, 0.0, -1.0), 0.5);
-                    sphere.set_material(Box::new(MetalMaterial::new(Color::from_floating_rgb(
-                        0.8, 0.6, 0.2,
-                    ))));
+                    sphere.set_material(Box::new(MetalMaterial::new(
+                        Color::from_floating_rgb(0.8, 0.6, 0.2),
+                        1.0,
+                    )));
                     Box::new(sphere)
                 })
                 .build(),

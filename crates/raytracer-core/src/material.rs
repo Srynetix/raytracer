@@ -8,7 +8,7 @@ pub struct ScatterResult {
 }
 
 pub trait Material: DynClone {
-    fn scatter(&mut self, ray: &Ray, record: &HitRecord) -> Option<ScatterResult>;
+    fn scatter(&self, ray: &Ray, record: &HitRecord) -> Option<ScatterResult>;
 }
 
 dyn_clone::clone_trait_object!(Material);

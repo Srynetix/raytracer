@@ -1,4 +1,4 @@
-use crate::{collider::Collider, hit_record::HitRecord, Material, Ray};
+use crate::{collider::Collider, hit_record::HitRecord, Ray};
 
 #[derive(Default)]
 pub struct World {
@@ -42,28 +42,21 @@ impl WorldBuilder {
 }
 
 impl Collider for World {
-    fn hit(
-        &self,
-        ray: &Ray,
-        t_min: f64,
-        t_max: f64,
-    ) -> Option<(HitRecord, Option<Box<dyn Material>>)> {
+    fn hit<'a>(&'a self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord<'a>> {
         let mut record = HitRecord::default();
-        let mut material = None;
         let mut hit_anything = false;
         let mut closest = t_max;
 
         for collider in &self.colliders {
-            if let Some((hit_record, hit_material)) = collider.hit(ray, t_min, closest) {
+            if let Some(hit_record) = collider.hit(ray, t_min, closest) {
                 hit_anything = true;
                 closest = hit_record.t;
                 record = hit_record;
-                material = hit_material;
             }
         }
 
         if hit_anything {
-            Some((record, material))
+            Some(record)
         } else {
             None
         }

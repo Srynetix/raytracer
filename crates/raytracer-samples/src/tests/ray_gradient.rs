@@ -12,5 +12,5 @@ fn run() {
     let image = scene.render(GradientShader);
 
     renderer.render(&image).unwrap();
-    assert_ppm_snapshot(renderer, "./src/samples/ray_gradient.ppm");
+    assert_ppm_snapshot(renderer, "ray_gradient.ppm");
 }

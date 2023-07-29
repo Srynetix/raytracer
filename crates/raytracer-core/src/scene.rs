@@ -135,7 +135,7 @@ impl Scene {
         }
     }
 
-    pub fn render(&mut self, mut ray_color: impl RayShader) -> Image {
+    pub fn render(&mut self, ray_color: impl RayShader) -> Image {
         let mut pixels = vec![];
         let origin = Vec3::zero();
 
