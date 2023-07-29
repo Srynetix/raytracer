@@ -4,7 +4,7 @@ help:
 
 # Build project
 build:
-	@cargo build
+	@cargo build --tests
 
 # Format
 fmt:
@@ -12,7 +12,7 @@ fmt:
 
 # Lint
 lint:
-	@cargo clippy
+	@cargo clippy --tests
 
 # Test
 test:
@@ -20,4 +20,4 @@ test:
 
 # Run
 run:
-	@cargo run
+	@cargo run --release

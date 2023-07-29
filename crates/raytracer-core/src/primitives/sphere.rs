@@ -1,13 +1,22 @@
-use crate::{hit_record::HitRecord, hittable::Hittable, Ray, Vec3};
+use crate::{collider::Collider, hit_record::HitRecord, Material, Ray, Vec3};
 
 pub struct Sphere {
     center: Vec3,
     radius: f64,
+    material: Option<Box<dyn Material>>,
 }
 
 impl Sphere {
     pub fn new(center: Vec3, radius: f64) -> Self {
-        Self { center, radius }
+        Self {
+            center,
+            radius,
+            material: None,
+        }
+    }
+
+    pub fn set_material(&mut self, material: Box<dyn Material>) {
+        self.material = Some(material);
     }
 
     pub fn center(&self) -> Vec3 {
@@ -19,8 +28,13 @@ impl Sphere {
     }
 }
 
-impl Hittable for Sphere {
-    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+impl Collider for Sphere {
+    fn hit(
+        &self,
+        ray: &Ray,
+        t_min: f64,
+        t_max: f64,
+    ) -> Option<(HitRecord, Option<Box<dyn Material>>)> {
         let oc = ray.origin() - self.center;
         let a = ray.direction().length_squared();
         let half_b = oc.dot(ray.direction());
@@ -53,6 +67,6 @@ impl Hittable for Sphere {
         };
         record.set_face_normal(ray, hit_normal);
 
-        Some(record)
+        Some((record, self.material.clone()))
     }
 }

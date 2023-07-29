@@ -1,27 +1,10 @@
-use raytracer_core::{
-    primitives::Sphere, Color, Hittable, Ray, RayColor, Renderer, Scene, SeedType, Vec3, World,
-};
+use raytracer_core::{primitives::Sphere, Color, Renderer, Scene, SeedType, Vec3, World};
 use raytracer_gpu_renderer::GpuRenderer;
-use tracing_subscriber::{layer::SubscriberExt, fmt, EnvFilter, util::SubscriberInitExt};
-
-#[derive(Default)]
-pub struct RayScene;
-
-impl RayColor for RayScene {
-    fn ray_color(&self, ray: &Ray, hittable: &dyn Hittable) -> Color {
-        if let Some(record) = hittable.hit(ray, 0.0, f64::MAX) {
-            return Color::from_floating_rgb(
-                (record.normal.x + 1.0) * 0.5,
-                (record.normal.y + 1.0) * 0.5,
-                (record.normal.z + 1.0) * 0.5,
-            );
-        }
-
-        let norm_direction = ray.direction().normalized();
-        let t = 0.5 * (norm_direction.y + 1.0);
-        (1.0 - t) * Color::from_rgb(255, 255, 255) + t * Color::from_floating_rgb(0.5, 0.7, 1.0)
-    }
-}
+use raytracer_samples::samples::{
+    materials::{lambertian::LambertianMaterial, metal::MetalMaterial},
+    shaders::simple_material::SimpleMaterialShader,
+};
+use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
 fn main() {
     tracing_subscriber::registry()
@@ -30,20 +13,45 @@ fn main() {
         .init();
 
     let mut renderer = GpuRenderer::new();
-    let mut scene = Scene::builder((512 * 2, 288 * 2).into())
+    let mut scene = Scene::builder((512, 288).into())
         .with_seed(SeedType::Fixed(1234567890))
-        .with_antialias(32)
+        .with_antialias(8)
+        .with_max_depth(32)
         .with_world(
             World::builder()
-                .with_hittable(Box::new(Sphere::new(Vec3::from_xyz(0.0, 0.0, -1.0), 0.5)))
-                .with_hittable(Box::new(Sphere::new(
-                    Vec3::from_xyz(0.0, -100.5, -1.0),
-                    100.0,
-                )))
+                .with_collider({
+                    let mut sphere = Sphere::new(Vec3::from_xyz(0.0, -100.5, -1.0), 100.0);
+                    sphere.set_material(Box::new(LambertianMaterial::new(
+                        Color::from_floating_rgb(0.8, 0.8, 0.0),
+                    )));
+                    Box::new(sphere)
+                })
+                .with_collider({
+                    let mut sphere = Sphere::new(Vec3::from_xyz(0.0, 0.0, -1.0), 0.5);
+                    sphere.set_material(Box::new(LambertianMaterial::new(
+                        Color::from_floating_rgb(0.7, 0.3, 0.3),
+                    )));
+                    Box::new(sphere)
+                })
+                .with_collider({
+                    let mut sphere = Sphere::new(Vec3::from_xyz(-1.0, 0.0, -1.0), 0.5);
+                    sphere.set_material(Box::new(MetalMaterial::new(Color::from_floating_rgb(
+                        0.8, 0.8, 0.8,
+                    ))));
+                    Box::new(sphere)
+                })
+                .with_collider({
+                    let mut sphere = Sphere::new(Vec3::from_xyz(1.0, 0.0, -1.0), 0.5);
+                    sphere.set_material(Box::new(MetalMaterial::new(Color::from_floating_rgb(
+                        0.8, 0.6, 0.2,
+                    ))));
+                    Box::new(sphere)
+                })
                 .build(),
         )
         .build();
 
-    let image = scene.render(RayScene);
+    let color = SimpleMaterialShader;
+    let image = scene.render(color);
     renderer.render(&image).unwrap()
 }

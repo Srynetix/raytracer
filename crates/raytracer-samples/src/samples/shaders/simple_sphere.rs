@@ -1,7 +1,4 @@
-use raytracer_core::{Camera, Color, Hittable, Ray, RayColor, Renderer, Scene, Vec3};
-use raytracer_image_renderer::ppm::PpmRenderer;
-
-use crate::{assert_ppm_snapshot, sample_scene_builder};
+use raytracer_core::{Collider, Color, Ray, RayShader, Vec3};
 
 fn hit_sphere(center: Vec3, radius: f64, ray: &Ray) -> bool {
     let oc = ray.origin() - center;
@@ -12,10 +9,10 @@ fn hit_sphere(center: Vec3, radius: f64, ray: &Ray) -> bool {
     discriminant > 0.0
 }
 
-struct RayScene;
+pub struct SimpleSphereShader;
 
-impl RayColor for RayScene {
-    fn ray_color(&self, ray: &Ray, _hittable: &dyn Hittable) -> Color {
+impl RayShader for SimpleSphereShader {
+    fn ray_color(&mut self, ray: &Ray, _collider: &dyn Collider, _depth: u32) -> Color {
         if hit_sphere(Vec3::from_xyz(0.0, 0.0, -1.0), 0.5, ray) {
             return Color::from_rgb(255, 0, 0);
         }
@@ -24,14 +21,4 @@ impl RayColor for RayScene {
         let t = 0.5 * (norm_direction.y + 1.0);
         (1.0 - t) * Color::from_rgb(255, 255, 255) + t * Color::from_floating_rgb(0.5, 0.7, 1.0)
     }
-}
-
-#[test]
-fn run() {
-    let mut renderer = PpmRenderer::new(Vec::new());
-    let mut scene = sample_scene_builder().build();
-    let image = scene.render(RayScene);
-
-    renderer.render(&image).unwrap();
-    assert_ppm_snapshot(renderer, "./src/samples/ray_sphere.ppm");
 }

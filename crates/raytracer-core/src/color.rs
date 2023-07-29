@@ -39,11 +39,27 @@ impl Color {
     }
 
     pub fn black() -> Self {
-        Self::from_rgb(0, 0, 0)
+        Self::from_floating_rgb(0.0, 0.0, 0.0)
+    }
+
+    pub fn red() -> Self {
+        Self::from_floating_rgb(1.0, 0.0, 0.0)
+    }
+
+    pub fn blue() -> Self {
+        Self::from_floating_rgb(0.0, 0.0, 1.0)
+    }
+
+    pub fn green() -> Self {
+        Self::from_floating_rgb(0.0, 1.0, 0.0)
     }
 
     pub fn white() -> Self {
-        Self::from_rgb(255, 255, 255)
+        Self::from_floating_rgb(1.0, 1.0, 1.0)
+    }
+
+    pub fn gray() -> Self {
+        Self::from_floating_rgb(0.5, 0.5, 0.5)
     }
 
     pub fn to_u8_array(&self) -> [u8; 4] {
@@ -53,6 +69,15 @@ impl Color {
             u8_color_from_f64(self.b),
             u8_color_from_f64(self.a),
         ]
+    }
+
+    pub fn map<F: Fn(f64) -> f64>(&self, f: F) -> Self {
+        Self {
+            r: f(self.r),
+            g: f(self.g),
+            b: f(self.b),
+            a: self.a,
+        }
     }
 }
 
@@ -64,6 +89,19 @@ impl Mul<f64> for Color {
             r: self.r * rhs,
             g: self.g * rhs,
             b: self.b * rhs,
+            a: self.a,
+        }
+    }
+}
+
+impl Mul<Color> for Color {
+    type Output = Self;
+
+    fn mul(self, rhs: Self) -> Self::Output {
+        Self {
+            r: self.r * rhs.r,
+            g: self.g * rhs.g,
+            b: self.b * rhs.b,
             a: self.a,
         }
     }

@@ -1,18 +1,21 @@
+use std::fmt::Display;
+
 use indicatif::{ProgressIterator, ProgressStyle};
-use rand::{thread_rng, Rng, SeedableRng};
-use rand_chacha::ChaCha8Rng;
+use rand::Rng;
 use tracing::info;
 
-use crate::{Camera, Color, Image, RayColor, Vec3, World};
+use crate::{Camera, Color, Image, RayShader, RngWrapper, SeedType, Vec3, World};
 
-pub enum SeedType {
-    Random,
-    Fixed(u64),
-}
-
+#[derive(Debug, Clone)]
 pub struct SceneSize {
     width: u32,
     height: u32,
+}
+
+impl Display for SceneSize {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_fmt(format_args!("{}x{}", self.width, self.height))
+    }
 }
 
 impl SceneSize {
@@ -40,7 +43,8 @@ pub struct Scene {
     world: World,
     camera: Camera,
     samples_per_pixel: u32,
-    rng: ChaCha8Rng,
+    max_depth: u32,
+    rng: RngWrapper,
 }
 
 pub struct SceneBuilder {
@@ -49,6 +53,7 @@ pub struct SceneBuilder {
     world: Option<World>,
     camera: Option<Camera>,
     seed: Option<SeedType>,
+    max_depth: Option<u32>,
 }
 
 impl SceneBuilder {
@@ -59,6 +64,7 @@ impl SceneBuilder {
             world: None,
             camera: None,
             seed: None,
+            max_depth: None,
         }
     }
 
@@ -86,6 +92,15 @@ impl SceneBuilder {
         self
     }
 
+    pub fn with_max_depth(mut self, mut max_depth: u32) -> Self {
+        if max_depth == 0 {
+            max_depth = 1;
+        }
+
+        self.max_depth = Some(max_depth);
+        self
+    }
+
     pub fn with_world(mut self, world: World) -> Self {
         self.world = Some(world);
         self
@@ -97,10 +112,8 @@ impl SceneBuilder {
             samples_per_pixel: self.samples_per_pixel.unwrap_or(1),
             camera: self.camera.unwrap_or_default(),
             world: self.world.unwrap_or_default(),
-            rng: match self.seed {
-                Some(SeedType::Fixed(value)) => ChaCha8Rng::seed_from_u64(value),
-                _ => ChaCha8Rng::from_rng(thread_rng()).unwrap(),
-            },
+            max_depth: self.max_depth.unwrap_or(1),
+            rng: RngWrapper::new(self.seed.unwrap_or_default()),
         }
     }
 }
@@ -122,13 +135,15 @@ impl Scene {
         }
     }
 
-    pub fn render(&mut self, ray_color: impl RayColor) -> Image {
+    pub fn render(&mut self, mut ray_color: impl RayShader) -> Image {
         let mut pixels = vec![];
         let origin = Vec3::zero();
 
         info!(
-            "Rendering image of size {}x{} with antialias using {} samples.",
-            self.size.width, self.size.height, self.samples_per_pixel
+            message = "Rendering image",
+            size = %self.size,
+            antialias = self.samples_per_pixel,
+            max_depth = self.max_depth
         );
 
         let progress_style = ProgressStyle::default_bar()
@@ -145,10 +160,19 @@ impl Scene {
                 for _ in 0..self.samples_per_pixel {
                     let u = (x as f64 + self.gen_jitter()) / (self.size.width - 1) as f64;
                     let v = (y as f64 + self.gen_jitter()) / (self.size.height - 1) as f64;
-                    color += ray_color.ray_color(&self.camera.cast_ray(origin, u, v), &self.world);
+                    color += ray_color.ray_color(
+                        &self.camera.cast_ray(origin, u, v),
+                        &self.world,
+                        self.max_depth,
+                    );
                 }
 
+                // Divide color
                 color /= self.samples_per_pixel as f64;
+
+                // Gamma correction
+                color = color.map(f64::sqrt);
+
                 pixels.push(color);
             }
         }

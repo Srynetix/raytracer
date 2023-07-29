@@ -4,6 +4,7 @@ version = "0.0.0"
 edition = "2021"
 
 [dependencies]
+dyn-clone = "1.0.12"
 indicatif = "0.17.5"
 rand = "0.8.5"
 rand_chacha = "0.3.1"

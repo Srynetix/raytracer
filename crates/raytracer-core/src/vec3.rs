@@ -1,4 +1,6 @@
-use std::ops::{Add, Div, Mul, Neg, Sub};
+use std::ops::{Add, Div, Mul, Neg, RangeInclusive, Sub};
+
+use rand::Rng;
 
 #[derive(Clone, Copy, PartialEq, PartialOrd, Debug)]
 pub struct Vec3 {
@@ -38,6 +40,37 @@ impl Vec3 {
 
     pub fn normalized(&self) -> Self {
         *self / self.length()
+    }
+
+    pub fn reflect(&self, normal: Self) -> Self {
+        *self - 2.0 * self.dot(normal) * normal
+    }
+
+    pub fn is_near_zero(&self) -> bool {
+        let s = 1e-8;
+        self.x.abs() < s && self.y.abs() < s && self.z.abs() < s
+    }
+
+    pub fn gen_range<R: Rng>(rng: &mut R, range: RangeInclusive<f64>) -> Self {
+        Self {
+            x: rng.gen_range(range.clone()),
+            y: rng.gen_range(range.clone()),
+            z: rng.gen_range(range),
+        }
+    }
+
+    pub fn gen_random_in_unit_sphere<R: Rng>(rng: &mut R) -> Self {
+        loop {
+            let vec = Self::gen_range(rng, -1.0..=1.0);
+            if vec.length_squared() >= 1.0 {
+                continue;
+            }
+            return vec;
+        }
+    }
+
+    pub fn gen_random_in_unit_sphere_normalized<R: Rng>(rng: &mut R) -> Self {
+        Self::gen_random_in_unit_sphere(rng).normalized()
     }
 }
 
