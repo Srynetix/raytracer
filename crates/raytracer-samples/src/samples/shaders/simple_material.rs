@@ -1,5 +1,10 @@
+//! Simple material shader.
+//!
+//! Use the collider material.
+
 use raytracer_core::{Collider, Color, Context, Ray, RayShader};
 
+/// Simple material shader.
 #[derive(Default, Clone)]
 pub struct SimpleMaterialShader;
 

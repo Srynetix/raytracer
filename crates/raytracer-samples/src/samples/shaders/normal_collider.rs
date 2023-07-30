@@ -1,5 +1,8 @@
+//! Show normals, using a collider.
+
 use raytracer_core::{Collider, Color, Context, Ray, RayShader};
 
+/// Normal collider shader.
 #[derive(Default, Clone)]
 pub struct NormalColliderShader;
 

@@ -1,11 +1,15 @@
+//! Dielectric material.
+
 use raytracer_core::{rand::Rng, Color, Context, HitRecord, Material, Ray, ScatterResult};
 
+/// Dielectric material.
 #[derive(Clone, Debug)]
 pub struct DielectricMaterial {
     index_of_refraction: f64,
 }
 
 impl DielectricMaterial {
+    /// Create a new dielectric material.
     pub fn new(index_of_refraction: f64) -> Self {
         Self {
             index_of_refraction,

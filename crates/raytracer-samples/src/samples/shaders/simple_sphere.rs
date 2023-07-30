@@ -1,3 +1,5 @@
+//! Draw a sphere.
+
 use raytracer_core::{Collider, Color, Context, Ray, RayShader, Vec3};
 
 fn hit_sphere(center: Vec3, radius: f64, ray: &Ray) -> bool {
@@ -9,6 +11,7 @@ fn hit_sphere(center: Vec3, radius: f64, ray: &Ray) -> bool {
     discriminant > 0.0
 }
 
+/// Simple sphere shader.
 #[derive(Default, Clone)]
 pub struct SimpleSphereShader;
 

@@ -1,3 +1,5 @@
+//! Included shaders.
+
 pub mod diffuse;
 pub mod diffuse_hemisphere;
 pub mod gradient;

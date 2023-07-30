@@ -1,3 +1,5 @@
+//! Show normals, without using colliders.
+
 use raytracer_core::{Collider, Color, Context, Ray, RayShader, Vec3};
 
 fn hit_sphere(center: Vec3, radius: f64, ray: &Ray) -> f64 {
@@ -14,6 +16,7 @@ fn hit_sphere(center: Vec3, radius: f64, ray: &Ray) -> f64 {
     }
 }
 
+/// Normal shader.
 #[derive(Default, Clone)]
 pub struct NormalShader;
 

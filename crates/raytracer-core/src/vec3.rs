@@ -2,32 +2,42 @@ use std::ops::{Add, Div, Mul, Neg, RangeInclusive, Sub};
 
 use rand::Rng;
 
+/// A vector containing 3x f64 components.
 #[derive(Clone, Copy, PartialEq, PartialOrd, Debug)]
 pub struct Vec3 {
+    /// X component.
     pub x: f64,
+    /// Y component.
     pub y: f64,
+    /// Z component.
     pub z: f64,
 }
 
 impl Vec3 {
+    /// Vector initialized to (0, 0, 0).
     pub const ZERO: Self = Self::new(0.0, 0.0, 0.0);
 
+    /// Create a new vector.
     pub const fn new(x: f64, y: f64, z: f64) -> Self {
         Self { x, y, z }
     }
 
+    /// Get the length of the vector.
     pub fn length(&self) -> f64 {
         self.length_squared().sqrt()
     }
 
+    /// Get the length squared of the vector.
     pub fn length_squared(&self) -> f64 {
         self.x * self.x + self.y * self.y + self.z * self.z
     }
 
+    /// Get the dot product with another vector.
     pub fn dot(&self, rhs: Self) -> f64 {
         self.x * rhs.x + self.y * rhs.y + self.z * rhs.z
     }
 
+    /// Get the cross product with another vector.
     pub fn cross(&self, rhs: Self) -> Self {
         Self {
             x: self.y * rhs.z - self.z * rhs.y,
@@ -36,14 +46,17 @@ impl Vec3 {
         }
     }
 
+    /// Return the current vector normalized.
     pub fn normalized(&self) -> Self {
         *self / self.length()
     }
 
+    /// Reflect vector following a normal.
     pub fn reflect(&self, normal: Self) -> Self {
         *self - 2.0 * self.dot(normal) * normal
     }
 
+    /// Refract vector following a normal and a refraction ratio.
     pub fn refract(&self, normal: Self, ratio: f64) -> Self {
         let cos_theta = (-*self).dot(normal).min(1.0);
         let perp = ratio * (*self + cos_theta * normal);
@@ -51,11 +64,13 @@ impl Vec3 {
         perp + parallel
     }
 
+    /// Check if the vector is near zero.
     pub fn is_near_zero(&self) -> bool {
         let s = 1e-8;
         self.x.abs() < s && self.y.abs() < s && self.z.abs() < s
     }
 
+    /// Generate a random vector using a range.
     pub fn gen_range<R: Rng>(rng: &mut R, range: RangeInclusive<f64>) -> Self {
         Self {
             x: rng.gen_range(range.clone()),
@@ -64,6 +79,7 @@ impl Vec3 {
         }
     }
 
+    /// Generate a random vector on a unit sphere.
     pub fn gen_in_unit_sphere<R: Rng>(rng: &mut R) -> Self {
         loop {
             let vec = Self::gen_range(rng, -1.0..=1.0);
@@ -74,6 +90,7 @@ impl Vec3 {
         }
     }
 
+    /// Generate a random vector on a unit disk.
     pub fn gen_in_unit_disk<R: Rng>(rng: &mut R) -> Self {
         loop {
             let vec = Self {
@@ -88,6 +105,7 @@ impl Vec3 {
         }
     }
 
+    /// Generate a normalized random vector on a unit sphere.
     pub fn gen_in_unit_sphere_normalized<R: Rng>(rng: &mut R) -> Self {
         Self::gen_in_unit_sphere(rng).normalized()
     }

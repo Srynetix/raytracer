@@ -1,13 +1,11 @@
 use raytracer_core::{Renderer, SeedType};
 use raytracer_image_renderer::ppm::PpmRenderer;
 
-use crate::{
-    assert_ppm_snapshot, build_context,
-    samples::{
-        scenes::random_spheres::random_spheres_scene,
-        shaders::simple_material::SimpleMaterialShader,
-    },
+use crate::samples::{
+    scenes::random_spheres::random_spheres_scene, shaders::simple_material::SimpleMaterialShader,
 };
+
+use super::{assert_ppm_snapshot, build_context};
 
 fn fixed_seed() -> SeedType {
     SeedType::Fixed(1234567890)

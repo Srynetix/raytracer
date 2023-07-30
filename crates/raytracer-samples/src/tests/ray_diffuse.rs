@@ -1,9 +1,8 @@
-use crate::{
-    assert_ppm_snapshot, build_context, sample_scene_builder,
-    samples::shaders::diffuse::DiffuseShader,
-};
+use crate::samples::shaders::diffuse::DiffuseShader;
 use raytracer_core::{primitives::Sphere, Renderer, Vec3, World};
 use raytracer_image_renderer::ppm::PpmRenderer;
+
+use super::{assert_ppm_snapshot, build_context, sample_scene_builder};
 
 #[test]
 fn run() {

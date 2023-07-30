@@ -1,5 +1,8 @@
+//! Simple gradient generator.
+
 use raytracer_core::{Collider, Color, Context, Ray, RayShader};
 
+/// Gradient shader.
 #[derive(Default, Clone)]
 pub struct GradientShader;
 

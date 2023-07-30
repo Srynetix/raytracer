@@ -1,9 +1,9 @@
+use crate::tests::assert_ppm_snapshot;
+
 #[test]
 fn run() {
     use raytracer_core::{Color, Image, Renderer};
     use raytracer_image_renderer::ppm::PpmRenderer;
-
-    use crate::assert_ppm_snapshot;
 
     let mut renderer = PpmRenderer::new(Vec::new());
 

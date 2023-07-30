@@ -1,9 +1,13 @@
+//! Lambertian algorithm using random generation on an hemisphere.
+
 use raytracer_core::{rand::Rng, Collider, Color, Context, Ray, RayShader, Vec3};
 
+/// Diffuse hemisphere shader.
 #[derive(Default, Clone)]
 pub struct DiffuseHemisphereShader;
 
 impl DiffuseHemisphereShader {
+    /// Create a new diffuse hemisphere shader.
     pub fn new() -> Self {
         Default::default()
     }

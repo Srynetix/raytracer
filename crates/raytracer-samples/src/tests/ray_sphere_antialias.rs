@@ -1,10 +1,9 @@
 use raytracer_core::{primitives::Sphere, Renderer, Vec3, World};
 use raytracer_image_renderer::ppm::PpmRenderer;
 
-use crate::{
-    assert_ppm_snapshot, build_context, sample_scene_builder,
-    samples::shaders::normal_collider::NormalColliderShader,
-};
+use crate::samples::shaders::normal_collider::NormalColliderShader;
+
+use super::{assert_ppm_snapshot, build_context, sample_scene_builder};
 
 #[test]
 fn run() {

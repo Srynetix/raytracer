@@ -1,11 +1,16 @@
+//! Lambertian material.
+
 use raytracer_core::{Color, Context, HitRecord, Material, Ray, ScatterResult, Vec3};
 
+/// Lambertian material.
 #[derive(Clone, Debug)]
 pub struct LambertianMaterial {
+    /// Albedo.
     pub albedo: Color,
 }
 
 impl LambertianMaterial {
+    /// Create a new lambertian material.
     pub fn new(albedo: Color) -> Self {
         Self { albedo }
     }

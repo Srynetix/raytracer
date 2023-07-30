@@ -1,5 +1,6 @@
 use crate::{Context, Ray, Vec3};
 
+/// Camera.
 #[derive(Clone)]
 pub struct Camera {
     origin: Vec3,
@@ -11,6 +12,7 @@ pub struct Camera {
     lower_left_corner: Vec3,
 }
 
+/// Camera builder.
 pub struct CameraBuilder {
     position: Vec3,
     look_at: Vec3,
@@ -18,7 +20,7 @@ pub struct CameraBuilder {
     aspect_ratio: f64,
     aperture: f64,
     focus_distance: f64,
-    vertical_field_of_view: Option<f64>,
+    field_of_view: Option<f64>,
 }
 
 impl Default for CameraBuilder {
@@ -28,7 +30,7 @@ impl Default for CameraBuilder {
             look_at: Vec3::new(0.0, 0.0, -1.0),
             up_vector: Vec3::new(0.0, 1.0, 0.0),
             aspect_ratio: 16.0 / 9.0,
-            vertical_field_of_view: None,
+            field_of_view: None,
             aperture: 0.0,
             focus_distance: 1.0,
         }
@@ -36,52 +38,61 @@ impl Default for CameraBuilder {
 }
 
 impl CameraBuilder {
+    /// Create a new camera builder.
     pub fn new() -> Self {
         Default::default()
     }
 
+    /// Set the camera position.
     pub fn with_position(mut self, position: Vec3) -> Self {
         self.position = position;
         self
     }
 
+    /// Set the camera target.
     pub fn with_look_at(mut self, look_at: Vec3) -> Self {
         self.look_at = look_at;
         self
     }
 
+    /// Set the camera up vector.
     pub fn with_up_vector(mut self, up_vector: Vec3) -> Self {
         self.up_vector = up_vector;
         self
     }
 
+    /// Set the camera aspect ratio.
     pub fn with_aspect_ratio(mut self, value: f64) -> Self {
         self.aspect_ratio = value;
         self
     }
 
+    /// Set the camera lens aperture.
     pub fn with_aperture(mut self, value: f64) -> Self {
         self.aperture = value;
         self
     }
 
+    /// Set the camera focus distance.
     pub fn with_focus_distance(mut self, value: f64) -> Self {
         self.focus_distance = value;
         self
     }
 
-    pub fn with_vertical_field_of_view(mut self, value: f64) -> Self {
-        self.vertical_field_of_view = Some(value);
+    /// Set the camera field of view.
+    pub fn with_field_of_view(mut self, value: f64) -> Self {
+        self.field_of_view = Some(value);
         self
     }
 
+    /// Build the camera.
     pub fn build(self) -> Camera {
         Camera::new(
             self.position,
             self.look_at,
             self.up_vector,
             self.aspect_ratio,
-            self.vertical_field_of_view.unwrap_or(90.0),
+            self.field_of_view.unwrap_or(90.0),
             self.aperture,
             self.focus_distance,
         )
@@ -123,10 +134,12 @@ impl Camera {
         }
     }
 
+    /// Create a new camera builder.
     pub fn builder() -> CameraBuilder {
         CameraBuilder::new()
     }
 
+    /// Cast a ray from the camera.
     pub fn cast_ray(&self, ctx: &mut Context, horizontal_factor: f64, vertical_factor: f64) -> Ray {
         let rd = self.lens_radius * Vec3::gen_in_unit_disk(&mut ctx.rng);
         let offset = self.u * rd.x + self.v * rd.y;

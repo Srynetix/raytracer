@@ -3,9 +3,12 @@ use std::ops::{Deref, DerefMut};
 use rand::{thread_rng, RngCore, SeedableRng};
 use rand_chacha::ChaCha8Rng;
 
+/// Seed type.
 #[derive(Clone, Copy, Debug)]
 pub enum SeedType {
+    /// Random seed (use thread_rng).
     Random,
+    /// Fixed seed.
     Fixed(u64),
 }
 
@@ -15,12 +18,14 @@ impl Default for SeedType {
     }
 }
 
+/// RNG wrapper around ChaCha8.
 #[derive(Clone, Debug)]
 pub struct RngWrapper {
     inner: ChaCha8Rng,
 }
 
 impl RngWrapper {
+    /// Build a new RNG from a seed type.
     pub fn new(seed_type: SeedType) -> Self {
         Self {
             inner: match seed_type {

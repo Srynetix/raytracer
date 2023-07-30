@@ -1,15 +1,14 @@
 use raytracer_core::{primitives::Sphere, Color, Renderer, Scene, Vec3, World};
 use raytracer_image_renderer::ppm::PpmRenderer;
 
-use crate::{
-    assert_ppm_snapshot, build_context,
-    samples::{
-        materials::{
-            dielectric::DielectricMaterial, lambertian::LambertianMaterial, metal::MetalMaterial,
-        },
-        shaders::simple_material::SimpleMaterialShader,
+use crate::samples::{
+    materials::{
+        dielectric::DielectricMaterial, lambertian::LambertianMaterial, metal::MetalMaterial,
     },
+    shaders::simple_material::SimpleMaterialShader,
 };
+
+use super::{assert_ppm_snapshot, build_context};
 
 #[test]
 fn test() {

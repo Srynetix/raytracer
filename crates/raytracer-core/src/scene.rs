@@ -6,6 +6,7 @@ use tracing::info;
 
 use crate::{Camera, Color, Context, Image, RayShader, World};
 
+/// A scene size: width and height.
 #[derive(Debug, Clone)]
 pub struct SceneSize {
     width: u32,
@@ -19,14 +20,17 @@ impl Display for SceneSize {
 }
 
 impl SceneSize {
+    /// Create a scene size from a width and a height value.
     pub fn new(width: u32, height: u32) -> Self {
         Self { width, height }
     }
 
+    /// Get the width.
     pub fn width(&self) -> u32 {
         self.width
     }
 
+    /// Get the height.
     pub fn height(&self) -> u32 {
         self.height
     }
@@ -38,6 +42,7 @@ impl From<(u32, u32)> for SceneSize {
     }
 }
 
+/// A scene to render.
 pub struct Scene {
     size: SceneSize,
     world: World,
@@ -46,6 +51,7 @@ pub struct Scene {
     max_depth: u32,
 }
 
+/// Scene builder.
 pub struct SceneBuilder {
     size: SceneSize,
     samples_per_pixel: Option<u32>,
@@ -55,6 +61,7 @@ pub struct SceneBuilder {
 }
 
 impl SceneBuilder {
+    /// Create a scene builder.
     pub fn new(size: SceneSize) -> Self {
         Self {
             size,
@@ -65,11 +72,13 @@ impl SceneBuilder {
         }
     }
 
+    /// Set the scene size.
     pub fn with_size(mut self, size: SceneSize) -> Self {
         self.size = size;
         self
     }
 
+    /// Set the scene antialiasing (samples per pixel).
     pub fn with_antialias(mut self, mut value: u32) -> Self {
         if value == 0 {
             value = 1;
@@ -79,11 +88,13 @@ impl SceneBuilder {
         self
     }
 
+    /// Set the scene camera.
     pub fn with_camera(mut self, camera: Camera) -> Self {
         self.camera = Some(camera);
         self
     }
 
+    /// Set the scene max rendering depth.
     pub fn with_max_depth(mut self, mut max_depth: u32) -> Self {
         if max_depth == 0 {
             max_depth = 1;
@@ -93,11 +104,13 @@ impl SceneBuilder {
         self
     }
 
+    /// Set the scene world.
     pub fn with_world(mut self, world: World) -> Self {
         self.world = Some(world);
         self
     }
 
+    /// Build the scene.
     pub fn build(self) -> Scene {
         Scene {
             size: self.size,
@@ -110,39 +123,33 @@ impl SceneBuilder {
 }
 
 impl Scene {
+    /// Create a new scene builder.
     pub fn builder(size: SceneSize) -> SceneBuilder {
         SceneBuilder::new(size)
     }
 
-    fn gen_random_f64<R: Rng>(rng: &mut R) -> f64 {
-        rng.gen_range(0.0..=1.0)
-    }
-
-    fn gen_jitter<R: Rng>(rng: &mut R, samples_per_pixel: u32) -> f64 {
-        if samples_per_pixel > 1 {
-            Self::gen_random_f64(rng)
-        } else {
-            0.0
-        }
-    }
-
+    /// Set the scene antialiasing (samples per pixel).
     pub fn set_antialias(&mut self, value: u32) {
         self.samples_per_pixel = value;
     }
 
+    /// Set the scene max rendering depth.
     pub fn set_max_depth(&mut self, value: u32) {
         self.max_depth = value;
     }
 
+    /// Set the scene scale.
     pub fn set_scale(&mut self, value: f64) {
         self.size.width = (self.size.width as f64 * value) as u32;
         self.size.height = (self.size.height as f64 * value) as u32;
     }
 
+    /// Set the scene size.
     pub fn set_size(&mut self, value: SceneSize) {
         self.size = value;
     }
 
+    /// Render the scene.
     pub fn render<S: RayShader>(&self, mut ctx: Context, shader: S) -> Image {
         let mut pixels = vec![Color::BLACK; (self.size.width * self.size.height) as usize];
 
@@ -171,6 +178,7 @@ impl Scene {
         Image::from_pixels(self.size.width, pixels)
     }
 
+    /// Render the scene on multiple threads.
     pub fn render_parallel(
         &self,
         ctx: Context,
@@ -251,5 +259,17 @@ impl Scene {
         pb.inc(1);
 
         color
+    }
+
+    fn gen_random_f64<R: Rng>(rng: &mut R) -> f64 {
+        rng.gen_range(0.0..=1.0)
+    }
+
+    fn gen_jitter<R: Rng>(rng: &mut R, samples_per_pixel: u32) -> f64 {
+        if samples_per_pixel > 1 {
+            Self::gen_random_f64(rng)
+        } else {
+            0.0
+        }
     }
 }

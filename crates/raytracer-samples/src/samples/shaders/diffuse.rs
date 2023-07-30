@@ -1,9 +1,13 @@
+//! Lambertian algorithm using random generation on a sphere.
+
 use raytracer_core::{Collider, Color, Context, Ray, RayShader, Vec3};
 
+/// Diffuse shader.
 #[derive(Default, Clone)]
 pub struct DiffuseShader;
 
 impl DiffuseShader {
+    /// Create a new diffuse shader.
     pub fn new() -> Self {
         Default::default()
     }

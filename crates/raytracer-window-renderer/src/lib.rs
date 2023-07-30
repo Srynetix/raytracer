@@ -1,3 +1,7 @@
+//! Raytracer window renderer.
+
+#![forbid(missing_docs)]
+
 use pixels::{Pixels, SurfaceTexture};
 use raytracer_core::{Image, Renderer};
 use winit::{
@@ -7,10 +11,12 @@ use winit::{
     window::WindowBuilder,
 };
 
+/// Window renderer.
 #[derive(Default)]
 pub struct WindowRenderer;
 
 impl WindowRenderer {
+    /// Create a new window renderer.
     pub fn new() -> Self {
         Default::default()
     }

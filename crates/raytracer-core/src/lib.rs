@@ -1,3 +1,9 @@
+//! Raytracer core module.
+//!
+//! Contains everything needed for the raytracer to work.
+
+#![forbid(missing_docs)]
+
 mod camera;
 mod collider;
 mod color;

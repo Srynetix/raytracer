@@ -1,3 +1,5 @@
+//! The random spheres sample from the https://raytracing.github.io/books/RayTracingInOneWeekend.html book.
+
 use raytracer_core::{
     primitives::Sphere, rand::Rng, Camera, Color, RngWrapper, Scene, SeedType, Vec3, World,
 };
@@ -97,6 +99,7 @@ fn random_world(seed: SeedType) -> World {
     world
 }
 
+/// Generate the "random spheres" scene from the https://raytracing.github.io/books/RayTracingInOneWeekend.html book.
 pub fn random_spheres_scene(seed: SeedType) -> Scene {
     Scene::builder((1200, 800).into())
         .with_camera(
@@ -104,7 +107,7 @@ pub fn random_spheres_scene(seed: SeedType) -> Scene {
                 .with_aspect_ratio(3.0 / 2.0)
                 .with_position(Vec3::new(13.0, 2.0, 3.0))
                 .with_look_at(Vec3::new(0.0, 0.0, 0.0))
-                .with_vertical_field_of_view(20.0)
+                .with_field_of_view(20.0)
                 .with_focus_distance(10.0)
                 .with_aperture(0.1)
                 .build(),

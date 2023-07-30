@@ -1,15 +1,14 @@
 use raytracer_core::{primitives::Sphere, Camera, Color, Renderer, Scene, Vec3, World};
 use raytracer_image_renderer::ppm::PpmRenderer;
 
-use crate::{
-    assert_ppm_snapshot, build_context,
-    samples::{
-        materials::{
-            dielectric::DielectricMaterial, lambertian::LambertianMaterial, metal::MetalMaterial,
-        },
-        shaders::simple_material::SimpleMaterialShader,
+use crate::samples::{
+    materials::{
+        dielectric::DielectricMaterial, lambertian::LambertianMaterial, metal::MetalMaterial,
     },
+    shaders::simple_material::SimpleMaterialShader,
 };
+
+use super::{assert_ppm_snapshot, build_context};
 
 #[test]
 fn test() {
@@ -18,7 +17,7 @@ fn test() {
         .with_camera(
             Camera::builder()
                 .with_position(Vec3::new(-2.0, 2.0, 1.0))
-                .with_vertical_field_of_view(20.0)
+                .with_field_of_view(20.0)
                 .build(),
         )
         .with_antialias(16)

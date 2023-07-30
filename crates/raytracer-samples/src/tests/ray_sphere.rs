@@ -1,10 +1,9 @@
 use raytracer_core::Renderer;
 use raytracer_image_renderer::ppm::PpmRenderer;
 
-use crate::{
-    assert_ppm_snapshot, build_context, sample_scene_builder,
-    samples::shaders::simple_sphere::SimpleSphereShader,
-};
+use crate::samples::shaders::simple_sphere::SimpleSphereShader;
+
+use super::{assert_ppm_snapshot, build_context, sample_scene_builder};
 
 #[test]
 fn run() {

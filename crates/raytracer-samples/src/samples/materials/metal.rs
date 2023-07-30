@@ -1,5 +1,8 @@
+//! Metallic material.
+
 use raytracer_core::{Color, Context, HitRecord, Material, Ray, ScatterResult, Vec3};
 
+/// Metallic material.
 #[derive(Clone, Debug)]
 pub struct MetalMaterial {
     albedo: Color,
@@ -7,6 +10,7 @@ pub struct MetalMaterial {
 }
 
 impl MetalMaterial {
+    /// Create a new metallic material.
     pub fn new(albedo: Color, fuzz: f64) -> Self {
         Self {
             albedo,
