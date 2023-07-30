@@ -1,4 +1,4 @@
-use raytracer_core::{Collider, Color, Ray, RayShader, Vec3};
+use raytracer_core::{Collider, Color, Context, Ray, RayShader, Vec3};
 
 fn hit_sphere(center: Vec3, radius: f64, ray: &Ray) -> bool {
     let oc = ray.origin() - center;
@@ -12,7 +12,13 @@ fn hit_sphere(center: Vec3, radius: f64, ray: &Ray) -> bool {
 pub struct SimpleSphereShader;
 
 impl RayShader for SimpleSphereShader {
-    fn ray_color(&self, ray: &Ray, _collider: &dyn Collider, _depth: u32) -> Color {
+    fn ray_color(
+        &self,
+        _ctx: &mut Context,
+        ray: &Ray,
+        _collider: &dyn Collider,
+        _depth: u32,
+    ) -> Color {
         if hit_sphere(Vec3::from_xyz(0.0, 0.0, -1.0), 0.5, ray) {
             return Color::from_rgb(255, 0, 0);
         }

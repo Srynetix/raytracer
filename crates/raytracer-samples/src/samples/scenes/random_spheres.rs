@@ -26,67 +26,76 @@ fn random_world(seed: SeedType) -> World {
             if (center - Vec3::from_xyz(4.0, 0.2, 0.0)).length() > 0.9 {
                 if choose_material < 0.8 {
                     // Diffuse
-                    let albedo = rng.gen::<Color>() * rng.gen::<Color>();
-                    let mut material = LambertianMaterial::new(albedo);
-                    material.set_random_seed(seed);
-
-                    let mut sphere = Sphere::new(center, 0.2);
-                    sphere.set_material(Box::new(material));
-                    world.add_collider(Box::new(sphere));
+                    world.add_collider(Box::new(
+                        Sphere::builder()
+                            .with_center(center)
+                            .with_radius(0.2)
+                            .with_material(Box::new(LambertianMaterial::new(
+                                rng.gen::<Color>() * rng.gen::<Color>(),
+                            )))
+                            .build(),
+                    ))
                 } else if choose_material < 0.95 {
                     // Metal
-                    let albedo = Color::gen_range(&mut rng, 0.5..=1.0);
-                    let fuzz = rng.gen_range(0.0..=0.5);
-                    let mut material = MetalMaterial::new(albedo, fuzz);
-                    material.set_random_seed(seed);
-
-                    let mut sphere = Sphere::new(center, 0.2);
-                    sphere.set_material(Box::new(material));
-                    world.add_collider(Box::new(sphere));
+                    world.add_collider(Box::new(
+                        Sphere::builder()
+                            .with_center(center)
+                            .with_radius(0.2)
+                            .with_material(Box::new(MetalMaterial::new(
+                                Color::gen_range(&mut rng, 0.5..=1.0),
+                                rng.gen_range(0.0..=0.5),
+                            )))
+                            .build(),
+                    ))
                 } else {
                     // Glass
-                    let mut material = DielectricMaterial::new(1.5);
-                    material.set_random_seed(seed);
-
-                    let mut sphere = Sphere::new(center, 0.2);
-                    sphere.set_material(Box::new(material));
-                    world.add_collider(Box::new(sphere));
+                    world.add_collider(Box::new(
+                        Sphere::builder()
+                            .with_center(center)
+                            .with_radius(0.2)
+                            .with_material(Box::new(DielectricMaterial::new(1.5)))
+                            .build(),
+                    ))
                 }
             }
         }
     }
 
     // Elements
-    {
-        let mut material = DielectricMaterial::new(1.5);
-        material.set_random_seed(seed);
-        let mut sphere = Sphere::new(Vec3::from_xyz(0.0, 1.0, 0.0), 1.0);
-        sphere.set_material(Box::new(material));
-        world.add_collider(Box::new(sphere));
-    }
+    world.add_collider(Box::new(
+        Sphere::builder()
+            .with_center(Vec3::from_xyz(0.0, 1.0, 0.0))
+            .with_radius(1.0)
+            .with_material(Box::new(DielectricMaterial::new(1.5)))
+            .build(),
+    ));
 
-    {
-        let mut material = LambertianMaterial::new(Color::from_floating_rgb(0.4, 0.2, 0.1));
-        material.set_random_seed(seed);
-        let mut sphere = Sphere::new(Vec3::from_xyz(-4.0, 1.0, 0.0), 1.0);
-        sphere.set_material(Box::new(material));
-        world.add_collider(Box::new(sphere));
-    }
+    world.add_collider(Box::new(
+        Sphere::builder()
+            .with_center(Vec3::from_xyz(-4.0, 1.0, 0.0))
+            .with_radius(1.0)
+            .with_material(Box::new(LambertianMaterial::new(Color::from_floating_rgb(
+                0.4, 0.2, 0.1,
+            ))))
+            .build(),
+    ));
 
-    {
-        let mut material = MetalMaterial::new(Color::from_floating_rgb(0.7, 0.6, 0.5), 0.0);
-        material.set_random_seed(seed);
-        let mut sphere = Sphere::new(Vec3::from_xyz(4.0, 1.0, 0.0), 1.0);
-        sphere.set_material(Box::new(material));
-        world.add_collider(Box::new(sphere));
-    }
+    world.add_collider(Box::new(
+        Sphere::builder()
+            .with_center(Vec3::from_xyz(4.0, 1.0, 0.0))
+            .with_radius(1.0)
+            .with_material(Box::new(MetalMaterial::new(
+                Color::from_floating_rgb(0.7, 0.6, 0.5),
+                0.0,
+            )))
+            .build(),
+    ));
 
     world
 }
 
 pub fn random_spheres_scene(seed: SeedType) -> Scene {
     Scene::builder((1200, 800).into())
-        .with_seed(seed)
         .with_camera(
             Camera::builder()
                 .with_aspect_ratio(3.0 / 2.0)

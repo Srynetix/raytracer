@@ -1,18 +1,24 @@
-use raytracer_core::{Collider, Color, Ray, RayShader};
+use raytracer_core::{Collider, Color, Context, Ray, RayShader};
 
 pub struct SimpleMaterialShader;
 
 impl RayShader for SimpleMaterialShader {
-    fn ray_color(&self, ray: &Ray, collider: &dyn Collider, depth: u32) -> Color {
+    fn ray_color(
+        &self,
+        ctx: &mut Context,
+        ray: &Ray,
+        collider: &dyn Collider,
+        depth: u32,
+    ) -> Color {
         if depth == 0 {
             return Color::black();
         }
 
         if let Some(record) = collider.hit(ray, 0.001, f64::MAX) {
             if let Some(mat) = record.material {
-                if let Some(result) = mat.scatter(ray, &record) {
+                if let Some(result) = mat.scatter(ctx, ray, &record) {
                     return result.attenuation
-                        * self.ray_color(&result.scattered, collider, depth - 1);
+                        * self.ray_color(ctx, &result.scattered, collider, depth - 1);
                 } else {
                     return Color::black();
                 }

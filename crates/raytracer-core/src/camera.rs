@@ -1,6 +1,4 @@
-use std::cell::RefCell;
-
-use crate::{Ray, RngWrapper, SeedType, Vec3};
+use crate::{Context, Ray, Vec3};
 
 pub struct Camera {
     origin: Vec3,
@@ -10,7 +8,6 @@ pub struct Camera {
     horizontal: Vec3,
     vertical: Vec3,
     lower_left_corner: Vec3,
-    rng: RefCell<RngWrapper>,
 }
 
 pub struct CameraBuilder {
@@ -114,8 +111,6 @@ impl Camera {
         let lower_left_corner = origin - horizontal / 2.0 - vertical / 2.0 - focus_distance * w;
         let lens_radius = aperture / 2.0;
 
-        let rng = RefCell::new(RngWrapper::new(crate::SeedType::Random));
-
         Self {
             origin,
             horizontal,
@@ -124,20 +119,15 @@ impl Camera {
             v,
             lower_left_corner,
             lens_radius,
-            rng,
         }
-    }
-
-    pub fn set_random_seed(&mut self, seed_type: SeedType) {
-        *self.rng.borrow_mut() = RngWrapper::new(seed_type);
     }
 
     pub fn builder() -> CameraBuilder {
         CameraBuilder::new()
     }
 
-    pub fn cast_ray(&self, horizontal_factor: f64, vertical_factor: f64) -> Ray {
-        let rd = self.lens_radius * Vec3::gen_random_in_unit_disk(&mut *self.rng.borrow_mut());
+    pub fn cast_ray(&self, ctx: &mut Context, horizontal_factor: f64, vertical_factor: f64) -> Ray {
+        let rd = self.lens_radius * Vec3::gen_random_in_unit_disk(&mut ctx.rng);
         let offset = self.u * rd.x + self.v * rd.y;
 
         Ray::from_points(

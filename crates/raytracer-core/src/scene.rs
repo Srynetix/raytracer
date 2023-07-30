@@ -1,10 +1,10 @@
-use std::{cell::RefCell, fmt::Display};
+use std::fmt::Display;
 
 use indicatif::{ProgressIterator, ProgressStyle};
 use rand::Rng;
 use tracing::info;
 
-use crate::{Camera, Color, Image, RayShader, RngWrapper, SeedType, World};
+use crate::{Camera, Color, Context, Image, RayShader, World};
 
 #[derive(Debug, Clone)]
 pub struct SceneSize {
@@ -44,7 +44,6 @@ pub struct Scene {
     camera: Camera,
     samples_per_pixel: u32,
     max_depth: u32,
-    rng: RefCell<RngWrapper>,
 }
 
 pub struct SceneBuilder {
@@ -52,7 +51,6 @@ pub struct SceneBuilder {
     samples_per_pixel: Option<u32>,
     world: Option<World>,
     camera: Option<Camera>,
-    seed: Option<SeedType>,
     max_depth: Option<u32>,
 }
 
@@ -63,7 +61,6 @@ impl SceneBuilder {
             samples_per_pixel: None,
             world: None,
             camera: None,
-            seed: None,
             max_depth: None,
         }
     }
@@ -84,11 +81,6 @@ impl SceneBuilder {
 
     pub fn with_camera(mut self, camera: Camera) -> Self {
         self.camera = Some(camera);
-        self
-    }
-
-    pub fn with_seed(mut self, seed: SeedType) -> Self {
-        self.seed = Some(seed);
         self
     }
 
@@ -113,7 +105,6 @@ impl SceneBuilder {
             camera: self.camera.unwrap_or_else(|| Camera::builder().build()),
             world: self.world.unwrap_or_default(),
             max_depth: self.max_depth.unwrap_or(1),
-            rng: RefCell::new(RngWrapper::new(self.seed.unwrap_or_default())),
         }
     }
 }
@@ -123,13 +114,13 @@ impl Scene {
         SceneBuilder::new(size)
     }
 
-    fn gen_random_f64(&self) -> f64 {
-        self.rng.borrow_mut().gen_range(0.0..=1.0)
+    fn gen_random_f64<R: Rng>(rng: &mut R) -> f64 {
+        rng.gen_range(0.0..=1.0)
     }
 
-    fn gen_jitter(&self) -> f64 {
+    fn gen_jitter<R: Rng>(&self, rng: &mut R) -> f64 {
         if self.samples_per_pixel > 1 {
-            self.gen_random_f64()
+            Self::gen_random_f64(rng)
         } else {
             0.0
         }
@@ -147,7 +138,7 @@ impl Scene {
         self.size = value;
     }
 
-    pub fn render(&self, ray_color: impl RayShader) -> Image {
+    pub fn render(&self, ctx: &mut Context, ray_color: impl RayShader) -> Image {
         let mut pixels = vec![];
 
         info!(
@@ -169,13 +160,13 @@ impl Scene {
                 let mut color = Color::black();
 
                 for _ in 0..self.samples_per_pixel {
-                    let u = (x as f64 + self.gen_jitter()) / (self.size.width - 1) as f64;
-                    let v = (y as f64 + self.gen_jitter()) / (self.size.height - 1) as f64;
-                    color += ray_color.ray_color(
-                        &self.camera.cast_ray(u, v),
-                        &self.world,
-                        self.max_depth,
-                    );
+                    let u =
+                        (x as f64 + self.gen_jitter(&mut ctx.rng)) / (self.size.width - 1) as f64;
+                    let v =
+                        (y as f64 + self.gen_jitter(&mut ctx.rng)) / (self.size.height - 1) as f64;
+
+                    let ray = self.camera.cast_ray(ctx, u, v);
+                    color += ray_color.ray_color(ctx, &ray, &self.world, self.max_depth);
                 }
 
                 // Divide color

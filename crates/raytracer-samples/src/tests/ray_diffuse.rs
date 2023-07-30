@@ -1,5 +1,8 @@
-use crate::{assert_ppm_snapshot, sample_scene_builder, samples::shaders::diffuse::DiffuseShader};
-use raytracer_core::{primitives::Sphere, Renderer, SeedType, Vec3, World};
+use crate::{
+    assert_ppm_snapshot, build_context, sample_scene_builder,
+    samples::shaders::diffuse::DiffuseShader,
+};
+use raytracer_core::{primitives::Sphere, Renderer, Vec3, World};
 use raytracer_image_renderer::ppm::PpmRenderer;
 
 #[test]
@@ -10,16 +13,24 @@ fn run() {
         .with_max_depth(8)
         .with_world(
             World::builder()
-                .with_collider(Box::new(Sphere::new(Vec3::from_xyz(0.0, 0.0, -1.0), 0.5)))
-                .with_collider(Box::new(Sphere::new(
-                    Vec3::from_xyz(0.0, -100.5, -1.0),
-                    100.0,
-                )))
+                .with_collider(Box::new(
+                    Sphere::builder()
+                        .with_center(Vec3::from_xyz(0.0, 0.0, -1.0))
+                        .with_radius(0.5)
+                        .build(),
+                ))
+                .with_collider(Box::new(
+                    Sphere::builder()
+                        .with_center(Vec3::from_xyz(0.0, -100.5, -1.0))
+                        .with_radius(100.0)
+                        .build(),
+                ))
                 .build(),
         )
         .build();
 
-    let image = scene.render(DiffuseShader::new(SeedType::Fixed(1234567890)));
+    let mut ctx = build_context();
+    let image = scene.render(&mut ctx, DiffuseShader::new());
     renderer.render(&image).unwrap();
 
     assert_ppm_snapshot(renderer, "ray_diffuse.ppm");

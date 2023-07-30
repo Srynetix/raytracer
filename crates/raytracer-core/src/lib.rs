@@ -1,6 +1,7 @@
 mod camera;
 mod collider;
 mod color;
+mod context;
 mod hit_record;
 mod image;
 mod material;
@@ -16,6 +17,7 @@ mod world;
 pub use camera::Camera;
 pub use collider::Collider;
 pub use color::Color;
+pub use context::Context;
 pub use hit_record::HitRecord;
 pub use image::Image;
 pub use material::{Material, ScatterResult};

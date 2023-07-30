@@ -5,11 +5,19 @@ mod tests;
 
 use std::path::Path;
 
-use raytracer_core::{SceneBuilder, SeedType};
+use raytracer_core::{Context, RngWrapper, SceneBuilder, SeedType};
 use raytracer_image_renderer::ppm::PpmRenderer;
 
 pub fn sample_scene_builder() -> SceneBuilder {
-    SceneBuilder::new((384, 216).into()).with_seed(SeedType::Fixed(1234567890))
+    SceneBuilder::new((384, 216).into())
+}
+
+pub fn fixed_rng() -> RngWrapper {
+    RngWrapper::new(SeedType::Fixed(1234567890))
+}
+
+pub fn build_context() -> Context {
+    Context { rng: fixed_rng() }
 }
 
 fn compare_snapshot(data: &str, path: &Path) {

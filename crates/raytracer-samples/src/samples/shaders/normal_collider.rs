@@ -1,9 +1,15 @@
-use raytracer_core::{Collider, Color, Ray, RayShader};
+use raytracer_core::{Collider, Color, Context, Ray, RayShader};
 
 pub struct NormalColliderShader;
 
 impl RayShader for NormalColliderShader {
-    fn ray_color(&self, ray: &Ray, collider: &dyn Collider, _depth: u32) -> Color {
+    fn ray_color(
+        &self,
+        _ctx: &mut Context,
+        ray: &Ray,
+        collider: &dyn Collider,
+        _depth: u32,
+    ) -> Color {
         if let Some(record) = collider.hit(ray, 0.0, f64::MAX) {
             return Color::from_floating_rgb(
                 (record.normal.x + 1.0) * 0.5,

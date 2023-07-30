@@ -7,16 +7,8 @@ pub struct Sphere {
 }
 
 impl Sphere {
-    pub fn new(center: Vec3, radius: f64) -> Self {
-        Self {
-            center,
-            radius,
-            material: None,
-        }
-    }
-
-    pub fn set_material(&mut self, material: Box<dyn Material>) {
-        self.material = Some(material);
+    pub fn builder() -> SphereBuilder {
+        SphereBuilder::new()
     }
 
     pub fn center(&self) -> Vec3 {
@@ -25,6 +17,42 @@ impl Sphere {
 
     pub fn radius(&self) -> f64 {
         self.radius
+    }
+}
+
+#[derive(Default)]
+pub struct SphereBuilder {
+    center: Vec3,
+    radius: f64,
+    material: Option<Box<dyn Material>>,
+}
+
+impl SphereBuilder {
+    pub fn new() -> Self {
+        Default::default()
+    }
+
+    pub fn with_center(mut self, value: Vec3) -> Self {
+        self.center = value;
+        self
+    }
+
+    pub fn with_radius(mut self, value: f64) -> Self {
+        self.radius = value;
+        self
+    }
+
+    pub fn with_material(mut self, material: Box<dyn Material>) -> Self {
+        self.material = Some(material);
+        self
+    }
+
+    pub fn build(self) -> Sphere {
+        Sphere {
+            center: self.center,
+            radius: self.radius,
+            material: self.material,
+        }
     }
 }
 

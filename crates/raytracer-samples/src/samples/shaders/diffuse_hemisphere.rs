@@ -1,20 +1,15 @@
-use std::cell::RefCell;
+use raytracer_core::{rand::Rng, Collider, Color, Context, Ray, RayShader, Vec3};
 
-use raytracer_core::{Collider, Color, Ray, RayShader, RngWrapper, SeedType, Vec3};
-
-pub struct DiffuseHemisphereShader {
-    rng: RefCell<RngWrapper>,
-}
+#[derive(Default)]
+pub struct DiffuseHemisphereShader;
 
 impl DiffuseHemisphereShader {
-    pub fn new(seed_type: SeedType) -> Self {
-        Self {
-            rng: RefCell::new(RngWrapper::new(seed_type)),
-        }
+    pub fn new() -> Self {
+        Default::default()
     }
 
-    fn gen_random_in_hemisphere(&self, normal: Vec3) -> Vec3 {
-        let value = Vec3::gen_random_in_unit_sphere(&mut *self.rng.borrow_mut());
+    fn gen_random_in_hemisphere<R: Rng>(rng: &mut R, normal: Vec3) -> Vec3 {
+        let value = Vec3::gen_random_in_unit_sphere(rng);
         if value.dot(normal) > 0.0 {
             value
         } else {
@@ -24,16 +19,23 @@ impl DiffuseHemisphereShader {
 }
 
 impl RayShader for DiffuseHemisphereShader {
-    fn ray_color(&self, ray: &Ray, collider: &dyn Collider, depth: u32) -> Color {
+    fn ray_color(
+        &self,
+        ctx: &mut Context,
+        ray: &Ray,
+        collider: &dyn Collider,
+        depth: u32,
+    ) -> Color {
         if depth == 0 {
             return Color::black();
         }
 
         if let Some(record) = collider.hit(ray, 0.001, f64::MAX) {
-            let target = record.point + self.gen_random_in_hemisphere(record.normal);
+            let target = record.point + Self::gen_random_in_hemisphere(&mut ctx.rng, record.normal);
 
             return 0.5
                 * self.ray_color(
+                    ctx,
                     &Ray::from_points(record.point, target - record.point),
                     collider,
                     depth - 1,

@@ -1,4 +1,4 @@
-use raytracer_core::{Collider, Color, Ray, RayShader, Vec3};
+use raytracer_core::{Collider, Color, Context, Ray, RayShader, Vec3};
 
 fn hit_sphere(center: Vec3, radius: f64, ray: &Ray) -> f64 {
     let oc = ray.origin() - center;
@@ -17,7 +17,13 @@ fn hit_sphere(center: Vec3, radius: f64, ray: &Ray) -> f64 {
 pub struct NormalShader;
 
 impl RayShader for NormalShader {
-    fn ray_color(&self, ray: &Ray, _collider: &dyn Collider, _depth: u32) -> Color {
+    fn ray_color(
+        &self,
+        _ctx: &mut Context,
+        ray: &Ray,
+        _collider: &dyn Collider,
+        _depth: u32,
+    ) -> Color {
         let t = hit_sphere(Vec3::from_xyz(0.0, 0.0, -1.0), 0.5, ray);
         if t > 0.0 {
             let normal = (ray.at(t) - Vec3::from_xyz(0.0, 0.0, -1.0)).normalized();
