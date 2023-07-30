@@ -17,12 +17,11 @@ fn fixed_seed() -> SeedType {
 fn test() {
     let mut renderer = PpmRenderer::new(Vec::new());
     let mut scene = random_spheres_scene(fixed_seed());
-    scene.set_size((1200 / 4, 800 / 4).into());
-    scene.set_antialias(50);
-    scene.set_max_depth(50);
+    scene.set_scale(0.25);
+    scene.set_antialias(25);
+    scene.set_max_depth(25);
 
-    let mut ctx = build_context();
-    let image = scene.render(&mut ctx, SimpleMaterialShader);
+    let image = scene.render(build_context(), SimpleMaterialShader);
     renderer.render(&image).unwrap();
 
     assert_ppm_snapshot(renderer, "random_spheres.ppm");

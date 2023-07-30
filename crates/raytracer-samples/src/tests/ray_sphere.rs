@@ -10,8 +10,7 @@ use crate::{
 fn run() {
     let mut renderer = PpmRenderer::new(Vec::new());
     let scene = sample_scene_builder().build();
-    let mut ctx = build_context();
-    let image = scene.render(&mut ctx, SimpleSphereShader);
+    let image = scene.render(build_context(), SimpleSphereShader);
 
     renderer.render(&image).unwrap();
     assert_ppm_snapshot(renderer, "ray_sphere.ppm");

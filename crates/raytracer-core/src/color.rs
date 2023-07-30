@@ -19,12 +19,19 @@ fn u8_color_from_f64(value: f64) -> u8 {
 }
 
 impl Color {
-    pub fn from_rgb(r: u8, g: u8, b: u8) -> Self {
-        Self::from_rgba(r, g, b, 255)
+    pub const BLACK: Self = Self::from_f64x3(0.0, 0.0, 0.0);
+    pub const RED: Self = Self::from_f64x3(1.0, 0.0, 0.0);
+    pub const GREEN: Self = Self::from_f64x3(0.0, 1.0, 0.0);
+    pub const BLUE: Self = Self::from_f64x3(0.0, 0.0, 1.0);
+    pub const WHITE: Self = Self::from_f64x3(1.0, 1.0, 1.0);
+    pub const GRAY: Self = Self::from_f64x3(0.5, 0.5, 0.5);
+
+    pub fn from_u8x3(r: u8, g: u8, b: u8) -> Self {
+        Self::from_u8x4(r, g, b, 255)
     }
 
-    pub fn from_rgba(r: u8, g: u8, b: u8, a: u8) -> Self {
-        Self::from_floating_rgba(
+    pub fn from_u8x4(r: u8, g: u8, b: u8, a: u8) -> Self {
+        Self::from_f64x4(
             f64_color_from_u8(r),
             f64_color_from_u8(g),
             f64_color_from_u8(b),
@@ -32,39 +39,15 @@ impl Color {
         )
     }
 
-    pub fn from_floating_rgb(r: f64, g: f64, b: f64) -> Self {
-        Self::from_floating_rgba(r, g, b, 1.0)
+    pub const fn from_f64x3(r: f64, g: f64, b: f64) -> Self {
+        Self::from_f64x4(r, g, b, 1.0)
     }
 
-    pub fn from_floating_rgba(r: f64, g: f64, b: f64, a: f64) -> Self {
+    pub const fn from_f64x4(r: f64, g: f64, b: f64, a: f64) -> Self {
         Self { r, g, b, a }
     }
 
-    pub fn black() -> Self {
-        Self::from_floating_rgb(0.0, 0.0, 0.0)
-    }
-
-    pub fn red() -> Self {
-        Self::from_floating_rgb(1.0, 0.0, 0.0)
-    }
-
-    pub fn blue() -> Self {
-        Self::from_floating_rgb(0.0, 0.0, 1.0)
-    }
-
-    pub fn green() -> Self {
-        Self::from_floating_rgb(0.0, 1.0, 0.0)
-    }
-
-    pub fn white() -> Self {
-        Self::from_floating_rgb(1.0, 1.0, 1.0)
-    }
-
-    pub fn gray() -> Self {
-        Self::from_floating_rgb(0.5, 0.5, 0.5)
-    }
-
-    pub fn to_u8_array(&self) -> [u8; 4] {
+    pub fn to_u8x4(&self) -> [u8; 4] {
         [
             u8_color_from_f64(self.r),
             u8_color_from_f64(self.g),
@@ -190,7 +173,7 @@ mod tests {
     #[test]
     fn rgb() {
         assert_eq!(
-            Color::from_rgb(0, 0, 0),
+            Color::from_u8x3(0, 0, 0),
             Color {
                 r: 0.0,
                 g: 0.0,
@@ -203,7 +186,7 @@ mod tests {
     #[test]
     fn rgba() {
         assert_eq!(
-            Color::from_rgba(0, 0, 0, 0),
+            Color::from_u8x4(0, 0, 0, 0),
             Color {
                 r: 0.0,
                 g: 0.0,
@@ -216,7 +199,7 @@ mod tests {
     #[test]
     fn floating_rgb() {
         assert_eq!(
-            Color::from_floating_rgb(0.0, 0.0, 0.5),
+            Color::from_f64x3(0.0, 0.0, 0.5),
             Color {
                 r: 0.0,
                 g: 0.0,

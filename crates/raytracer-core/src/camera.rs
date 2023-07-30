@@ -1,5 +1,6 @@
 use crate::{Context, Ray, Vec3};
 
+#[derive(Clone)]
 pub struct Camera {
     origin: Vec3,
     u: Vec3,
@@ -23,9 +24,9 @@ pub struct CameraBuilder {
 impl Default for CameraBuilder {
     fn default() -> Self {
         Self {
-            position: Vec3::zero(),
-            look_at: Vec3::from_xyz(0.0, 0.0, -1.0),
-            up_vector: Vec3::from_xyz(0.0, 1.0, 0.0),
+            position: Vec3::ZERO,
+            look_at: Vec3::new(0.0, 0.0, -1.0),
+            up_vector: Vec3::new(0.0, 1.0, 0.0),
             aspect_ratio: 16.0 / 9.0,
             vertical_field_of_view: None,
             aperture: 0.0,
@@ -127,10 +128,10 @@ impl Camera {
     }
 
     pub fn cast_ray(&self, ctx: &mut Context, horizontal_factor: f64, vertical_factor: f64) -> Ray {
-        let rd = self.lens_radius * Vec3::gen_random_in_unit_disk(&mut ctx.rng);
+        let rd = self.lens_radius * Vec3::gen_in_unit_disk(&mut ctx.rng);
         let offset = self.u * rd.x + self.v * rd.y;
 
-        Ray::from_points(
+        Ray::new(
             self.origin + offset,
             self.lower_left_corner
                 + horizontal_factor * self.horizontal

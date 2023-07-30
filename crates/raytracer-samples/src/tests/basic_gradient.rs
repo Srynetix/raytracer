@@ -17,7 +17,7 @@ fn run() {
             let g = (height - y) as f64 / (height - 1) as f64;
             let b = 0.25;
 
-            pixels.push(Color::from_floating_rgb(r, g, b));
+            pixels.push(Color::from_f64x3(r, g, b));
         }
     }
 

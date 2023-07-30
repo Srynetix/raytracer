@@ -18,7 +18,7 @@ impl WindowRenderer {
     fn render_image(image: &Image, pixels: &mut [u8]) {
         for (idx, p) in pixels.chunks_exact_mut(4).enumerate() {
             let pixel = image.pixels()[idx];
-            p.copy_from_slice(&pixel.to_u8_array());
+            p.copy_from_slice(&pixel.to_u8x4());
         }
     }
 }
@@ -47,6 +47,10 @@ impl Renderer for WindowRenderer {
 
         event_loop.run(move |event, _, control_flow| {
             *control_flow = ControlFlow::Wait;
+
+            if let Event::RedrawRequested(_) = event {
+                pixels.render().unwrap();
+            }
 
             match event {
                 Event::WindowEvent {

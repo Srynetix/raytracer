@@ -14,8 +14,8 @@ impl World {
         WorldBuilder::new()
     }
 
-    pub fn add_collider(&mut self, element: Box<dyn Collider>) {
-        self.colliders.push(element)
+    pub fn add_collider<C: Collider + 'static>(&mut self, element: C) {
+        self.colliders.push(Box::new(element));
     }
 }
 
@@ -29,8 +29,8 @@ impl WorldBuilder {
         Default::default()
     }
 
-    pub fn with_collider(mut self, element: Box<dyn Collider>) -> Self {
-        self.colliders.push(element);
+    pub fn with_collider<C: Collider + 'static>(mut self, element: C) -> Self {
+        self.colliders.push(Box::new(element));
         self
     }
 

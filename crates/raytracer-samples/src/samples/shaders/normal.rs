@@ -14,6 +14,7 @@ fn hit_sphere(center: Vec3, radius: f64, ray: &Ray) -> f64 {
     }
 }
 
+#[derive(Default, Clone)]
 pub struct NormalShader;
 
 impl RayShader for NormalShader {
@@ -24,10 +25,10 @@ impl RayShader for NormalShader {
         _collider: &dyn Collider,
         _depth: u32,
     ) -> Color {
-        let t = hit_sphere(Vec3::from_xyz(0.0, 0.0, -1.0), 0.5, ray);
+        let t = hit_sphere(Vec3::new(0.0, 0.0, -1.0), 0.5, ray);
         if t > 0.0 {
-            let normal = (ray.at(t) - Vec3::from_xyz(0.0, 0.0, -1.0)).normalized();
-            return Color::from_floating_rgb(
+            let normal = (ray.at(t) - Vec3::new(0.0, 0.0, -1.0)).normalized();
+            return Color::from_f64x3(
                 (normal.x + 1.0) * 0.5,
                 (normal.y + 1.0) * 0.5,
                 (normal.z + 1.0) * 0.5,
@@ -36,6 +37,6 @@ impl RayShader for NormalShader {
 
         let norm_direction = ray.direction().normalized();
         let t = 0.5 * (norm_direction.y + 1.0);
-        (1.0 - t) * Color::from_rgb(255, 255, 255) + t * Color::from_floating_rgb(0.5, 0.7, 1.0)
+        (1.0 - t) * Color::from_u8x3(255, 255, 255) + t * Color::from_f64x3(0.5, 0.7, 1.0)
     }
 }

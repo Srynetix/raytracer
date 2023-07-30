@@ -45,8 +45,8 @@ impl Material for DielectricMaterial {
         };
 
         Some(ScatterResult {
-            attenuation: Color::white(),
-            scattered: Ray::from_points(record.point, direction),
+            attenuation: Color::WHITE,
+            scattered: Ray::new(record.point, direction),
         })
     }
 }

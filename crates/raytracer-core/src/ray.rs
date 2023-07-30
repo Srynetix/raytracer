@@ -7,14 +7,12 @@ pub struct Ray {
 }
 
 impl Ray {
-    pub fn zero() -> Self {
-        Self {
-            origin: Vec3::zero(),
-            direction: Vec3::zero(),
-        }
-    }
+    pub const ZERO: Self = Self {
+        origin: Vec3::ZERO,
+        direction: Vec3::ZERO,
+    };
 
-    pub fn from_points(origin: Vec3, direction: Vec3) -> Self {
+    pub const fn new(origin: Vec3, direction: Vec3) -> Self {
         Self { origin, direction }
     }
 
@@ -33,6 +31,6 @@ impl Ray {
 
 impl Default for Ray {
     fn default() -> Self {
-        Self::zero()
+        Self::ZERO
     }
 }

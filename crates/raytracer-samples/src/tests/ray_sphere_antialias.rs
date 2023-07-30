@@ -13,18 +13,17 @@ fn run() {
         .with_antialias(16)
         .with_world(
             World::builder()
-                .with_collider(Box::new(
+                .with_collider(
                     Sphere::builder()
-                        .with_center(Vec3::from_xyz(0.0, 0.0, -1.0))
+                        .with_center(Vec3::new(0.0, 0.0, -1.0))
                         .with_radius(0.5)
                         .build(),
-                ))
+                )
                 .build(),
         )
         .build();
 
-    let mut ctx = build_context();
-    let image = scene.render(&mut ctx, NormalColliderShader);
+    let image = scene.render(build_context(), NormalColliderShader);
     renderer.render(&image).unwrap();
 
     assert_ppm_snapshot(renderer, "ray_sphere_antialias.ppm");

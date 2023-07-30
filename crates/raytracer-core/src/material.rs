@@ -7,7 +7,7 @@ pub struct ScatterResult {
     pub attenuation: Color,
 }
 
-pub trait Material: DynClone {
+pub trait Material: DynClone + Send + Sync {
     fn scatter(&self, ctx: &mut Context, ray: &Ray, record: &HitRecord) -> Option<ScatterResult>;
 }
 

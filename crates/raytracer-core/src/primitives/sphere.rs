@@ -30,7 +30,7 @@ pub struct SphereBuilder {
 impl Default for SphereBuilder {
     fn default() -> Self {
         Self {
-            center: Vec3::zero(),
+            center: Vec3::ZERO,
             radius: 1.0,
             material: None,
         }
@@ -52,8 +52,8 @@ impl SphereBuilder {
         self
     }
 
-    pub fn with_material(mut self, material: Box<dyn Material>) -> Self {
-        self.material = Some(material);
+    pub fn with_material<M: Material + 'static>(mut self, material: M) -> Self {
+        self.material = Some(Box::new(material));
         self
     }
 

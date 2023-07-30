@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use indicatif::{ProgressIterator, ProgressStyle};
+use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use rand::Rng;
 use tracing::info;
 
@@ -118,8 +118,8 @@ impl Scene {
         rng.gen_range(0.0..=1.0)
     }
 
-    fn gen_jitter<R: Rng>(&self, rng: &mut R) -> f64 {
-        if self.samples_per_pixel > 1 {
+    fn gen_jitter<R: Rng>(rng: &mut R, samples_per_pixel: u32) -> f64 {
+        if samples_per_pixel > 1 {
             Self::gen_random_f64(rng)
         } else {
             0.0
@@ -134,12 +134,17 @@ impl Scene {
         self.max_depth = value;
     }
 
+    pub fn set_scale(&mut self, value: f64) {
+        self.size.width = (self.size.width as f64 * value) as u32;
+        self.size.height = (self.size.height as f64 * value) as u32;
+    }
+
     pub fn set_size(&mut self, value: SceneSize) {
         self.size = value;
     }
 
-    pub fn render<S: RayShader>(&self, ctx: &mut Context, shader: S) -> Image {
-        let mut pixels = vec![Color::black(); (self.size.width * self.size.height) as usize];
+    pub fn render<S: RayShader>(&self, mut ctx: Context, shader: S) -> Image {
+        let mut pixels = vec![Color::BLACK; (self.size.width * self.size.height) as usize];
 
         info!(
             message = "Rendering image",
@@ -148,38 +153,103 @@ impl Scene {
             max_depth = self.max_depth
         );
 
-        let progress_style = ProgressStyle::default_bar()
-            .template("Rendering image ... {bar:40} {pos}/{len} ({elapsed_precise})")
-            .unwrap();
+        let sty = ProgressStyle::with_template("{bar:40.cyan/blue}  {msg:<20} {pos:>7}/{len:7}")
+            .unwrap()
+            .progress_chars("##-");
 
-        for y in (1..self.size.height + 1)
-            .rev()
-            .progress_with_style(progress_style)
-        {
+        let pb = ProgressBar::new((self.size.width * self.size.height) as u64);
+        pb.set_style(sty.clone());
+        pb.set_message("Rendering image...");
+
+        for y in (1..self.size.height + 1).rev() {
             for x in 0..self.size.width {
-                let mut color = Color::black();
-
-                for _ in 0..self.samples_per_pixel {
-                    let u =
-                        (x as f64 + self.gen_jitter(&mut ctx.rng)) / (self.size.width - 1) as f64;
-                    let v =
-                        (y as f64 + self.gen_jitter(&mut ctx.rng)) / (self.size.height - 1) as f64;
-
-                    let ray = self.camera.cast_ray(ctx, u, v);
-                    color += shader.ray_color(ctx, &ray, &self.world, self.max_depth);
-                }
-
-                // Divide color
-                color /= self.samples_per_pixel as f64;
-
-                // Gamma correction
-                color = color.map(f64::sqrt);
-
                 let idx = (x + (self.size.height - y) * self.size.width) as usize;
-                pixels[idx] = color;
+                pixels[idx] = self.render_pixel(idx, &mut ctx, &shader, &pb);
             }
         }
 
         Image::from_pixels(self.size.width, pixels)
+    }
+
+    pub fn render_parallel(
+        &self,
+        ctx: Context,
+        shader: &dyn RayShader,
+        thread_count: u32,
+    ) -> Image {
+        let mut pixels = vec![Color::BLACK; (self.size.width * self.size.height) as usize];
+
+        info!(
+            message = "Rendering image",
+            size = %self.size,
+            antialias = self.samples_per_pixel,
+            max_depth = self.max_depth
+        );
+
+        let pixels_per_thread = (self.size.width * self.size.height / thread_count) as usize;
+
+        let m = MultiProgress::new();
+        let sty = ProgressStyle::with_template("{bar:40.cyan/blue}  {msg:<20} {pos:>7}/{len:7}")
+            .unwrap()
+            .progress_chars("##-");
+
+        crossbeam::scope(|scope| {
+            pixels
+                .chunks_mut(pixels_per_thread)
+                .enumerate()
+                .for_each(|(chunk_id, slice)| {
+                    let mut ctx = ctx.clone();
+
+                    let pb = m.add(ProgressBar::new(slice.len() as u64));
+                    pb.set_style(sty.clone());
+                    pb.set_message(format!("Rendering chunk #{chunk_id}"));
+
+                    scope.spawn(move |_| {
+                        slice.iter_mut().enumerate().for_each(|(idx, elem)| {
+                            let pixel_idx = chunk_id * pixels_per_thread + idx;
+                            *elem = self.render_pixel(pixel_idx, &mut ctx, shader, &pb);
+                        });
+
+                        pb.finish_with_message("Done");
+                    });
+                });
+        })
+        .unwrap();
+
+        Image::from_pixels(self.size.width, pixels)
+    }
+
+    fn render_pixel(
+        &self,
+        pixel_idx: usize,
+        ctx: &mut Context,
+        shader: &dyn RayShader,
+        pb: &ProgressBar,
+    ) -> Color {
+        // Compute x and y
+        let x = pixel_idx as u32 % self.size.width;
+        let y = pixel_idx as u32 / self.size.width;
+
+        let mut color = Color::BLACK;
+
+        for _ in 0..self.samples_per_pixel {
+            let u = (x as f64 + Self::gen_jitter(&mut ctx.rng, self.samples_per_pixel))
+                / (self.size.width - 1) as f64;
+            let v = (self.size.height as f64 - y as f64
+                + Self::gen_jitter(&mut ctx.rng, self.samples_per_pixel))
+                / (self.size.height - 1) as f64;
+
+            let ray = self.camera.cast_ray(ctx, u, v);
+            color += shader.ray_color(ctx, &ray, &self.world, self.max_depth);
+        }
+
+        color /= self.samples_per_pixel as f64;
+
+        // Gamma correction
+        color = color.map(f64::sqrt);
+
+        pb.inc(1);
+
+        color
     }
 }

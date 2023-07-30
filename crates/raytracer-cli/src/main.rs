@@ -11,13 +11,16 @@ fn main() {
         .with(EnvFilter::from_default_env().add_directive("raytracer=info".parse().unwrap()))
         .init();
 
+    let seed = SeedType::Fixed(1234567890);
     let mut renderer = WindowRenderer::new();
-    let mut scene = random_spheres_scene(SeedType::Random);
-    scene.set_antialias(200);
-    let mut ctx = Context {
-        rng: RngWrapper::new(SeedType::Random),
+    let mut scene = random_spheres_scene(seed);
+    // scene.set_antialias(50);
+    scene.set_scale(0.5);
+
+    let ctx = Context {
+        rng: RngWrapper::new(seed),
     };
 
-    let image = scene.render(&mut ctx, SimpleMaterialShader);
+    let image = scene.render_parallel(ctx, &SimpleMaterialShader, 16);
     renderer.render(&image).unwrap()
 }

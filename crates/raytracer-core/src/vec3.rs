@@ -10,11 +10,9 @@ pub struct Vec3 {
 }
 
 impl Vec3 {
-    pub fn zero() -> Self {
-        Self::from_xyz(0.0, 0.0, 0.0)
-    }
+    pub const ZERO: Self = Self::new(0.0, 0.0, 0.0);
 
-    pub fn from_xyz(x: f64, y: f64, z: f64) -> Self {
+    pub const fn new(x: f64, y: f64, z: f64) -> Self {
         Self { x, y, z }
     }
 
@@ -66,7 +64,7 @@ impl Vec3 {
         }
     }
 
-    pub fn gen_random_in_unit_sphere<R: Rng>(rng: &mut R) -> Self {
+    pub fn gen_in_unit_sphere<R: Rng>(rng: &mut R) -> Self {
         loop {
             let vec = Self::gen_range(rng, -1.0..=1.0);
             if vec.length_squared() >= 1.0 {
@@ -76,7 +74,7 @@ impl Vec3 {
         }
     }
 
-    pub fn gen_random_in_unit_disk<R: Rng>(rng: &mut R) -> Self {
+    pub fn gen_in_unit_disk<R: Rng>(rng: &mut R) -> Self {
         loop {
             let vec = Self {
                 x: rng.gen_range(-1.0..=1.0),
@@ -90,14 +88,14 @@ impl Vec3 {
         }
     }
 
-    pub fn gen_random_in_unit_sphere_normalized<R: Rng>(rng: &mut R) -> Self {
-        Self::gen_random_in_unit_sphere(rng).normalized()
+    pub fn gen_in_unit_sphere_normalized<R: Rng>(rng: &mut R) -> Self {
+        Self::gen_in_unit_sphere(rng).normalized()
     }
 }
 
 impl Default for Vec3 {
     fn default() -> Self {
-        Self::zero()
+        Self::ZERO
     }
 }
 

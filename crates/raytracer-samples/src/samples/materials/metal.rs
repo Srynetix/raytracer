@@ -18,9 +18,9 @@ impl MetalMaterial {
 impl Material for MetalMaterial {
     fn scatter(&self, ctx: &mut Context, ray: &Ray, record: &HitRecord) -> Option<ScatterResult> {
         let reflected = ray.direction().normalized().reflect(record.normal);
-        let scattered = Ray::from_points(
+        let scattered = Ray::new(
             record.point,
-            reflected + self.fuzz * Vec3::gen_random_in_unit_sphere(&mut ctx.rng),
+            reflected + self.fuzz * Vec3::gen_in_unit_sphere(&mut ctx.rng),
         );
         let amount = scattered.direction().dot(record.normal);
 

@@ -24,7 +24,7 @@ impl<W: Write> PpmRenderer<W> {
     }
 
     fn render_pixel(&mut self, pixel: &Color) -> Result<(), std::io::Error> {
-        let adapted_pixel = pixel.to_u8_array();
+        let adapted_pixel = pixel.to_u8x4();
         writeln!(
             self.writer,
             "{} {} {}",

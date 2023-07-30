@@ -14,82 +14,85 @@ fn random_world(seed: SeedType) -> World {
     let mut world = World::new();
     let mut rng = RngWrapper::new(seed);
 
+    world.add_collider(
+        Sphere::builder()
+            .with_center(Vec3::new(0.0, -1000.0, 0.0))
+            .with_radius(1000.0)
+            .with_material(LambertianMaterial::new(Color::from_f64x3(0.5, 0.5, 0.5)))
+            .build(),
+    );
+
     for a in -11..11 {
         for b in -11..11 {
             let choose_material = rand_f64(&mut rng);
-            let center = Vec3::from_xyz(
+            let center = Vec3::new(
                 a as f64 + 0.9 * rand_f64(&mut rng),
                 0.2,
                 b as f64 + 0.9 * rand_f64(&mut rng),
             );
 
-            if (center - Vec3::from_xyz(4.0, 0.2, 0.0)).length() > 0.9 {
+            if (center - Vec3::new(4.0, 0.2, 0.0)).length() > 0.9 {
                 if choose_material < 0.8 {
                     // Diffuse
-                    world.add_collider(Box::new(
+                    world.add_collider(
                         Sphere::builder()
                             .with_center(center)
                             .with_radius(0.2)
-                            .with_material(Box::new(LambertianMaterial::new(
+                            .with_material(LambertianMaterial::new(
                                 rng.gen::<Color>() * rng.gen::<Color>(),
-                            )))
+                            ))
                             .build(),
-                    ))
+                    )
                 } else if choose_material < 0.95 {
                     // Metal
-                    world.add_collider(Box::new(
+                    world.add_collider(
                         Sphere::builder()
                             .with_center(center)
                             .with_radius(0.2)
-                            .with_material(Box::new(MetalMaterial::new(
+                            .with_material(MetalMaterial::new(
                                 Color::gen_range(&mut rng, 0.5..=1.0),
                                 rng.gen_range(0.0..=0.5),
-                            )))
+                            ))
                             .build(),
-                    ))
+                    )
                 } else {
                     // Glass
-                    world.add_collider(Box::new(
+                    world.add_collider(
                         Sphere::builder()
                             .with_center(center)
                             .with_radius(0.2)
-                            .with_material(Box::new(DielectricMaterial::new(1.5)))
+                            .with_material(DielectricMaterial::new(1.5))
                             .build(),
-                    ))
+                    )
                 }
             }
         }
     }
 
     // Elements
-    world.add_collider(Box::new(
+    world.add_collider(
         Sphere::builder()
-            .with_center(Vec3::from_xyz(0.0, 1.0, 0.0))
+            .with_center(Vec3::new(0.0, 1.0, 0.0))
             .with_radius(1.0)
-            .with_material(Box::new(DielectricMaterial::new(1.5)))
+            .with_material(DielectricMaterial::new(1.5))
             .build(),
-    ));
+    );
 
-    world.add_collider(Box::new(
+    world.add_collider(
         Sphere::builder()
-            .with_center(Vec3::from_xyz(-4.0, 1.0, 0.0))
+            .with_center(Vec3::new(-4.0, 1.0, 0.0))
             .with_radius(1.0)
-            .with_material(Box::new(LambertianMaterial::new(Color::from_floating_rgb(
-                0.4, 0.2, 0.1,
-            ))))
+            .with_material(LambertianMaterial::new(Color::from_f64x3(0.4, 0.2, 0.1)))
             .build(),
-    ));
+    );
 
-    world.add_collider(Box::new(
+    world.add_collider(
         Sphere::builder()
-            .with_center(Vec3::from_xyz(4.0, 1.0, 0.0))
+            .with_center(Vec3::new(4.0, 1.0, 0.0))
             .with_radius(1.0)
-            .with_material(Box::new(MetalMaterial::new(
-                Color::from_floating_rgb(0.7, 0.6, 0.5),
-                0.0,
-            )))
+            .with_material(MetalMaterial::new(Color::from_f64x3(0.7, 0.6, 0.5), 0.0))
             .build(),
-    ));
+    );
 
     world
 }
@@ -99,8 +102,8 @@ pub fn random_spheres_scene(seed: SeedType) -> Scene {
         .with_camera(
             Camera::builder()
                 .with_aspect_ratio(3.0 / 2.0)
-                .with_position(Vec3::from_xyz(13.0, 2.0, 3.0))
-                .with_look_at(Vec3::from_xyz(0.0, 0.0, 0.0))
+                .with_position(Vec3::new(13.0, 2.0, 3.0))
+                .with_look_at(Vec3::new(0.0, 0.0, 0.0))
                 .with_vertical_field_of_view(20.0)
                 .with_focus_distance(10.0)
                 .with_aperture(0.1)
