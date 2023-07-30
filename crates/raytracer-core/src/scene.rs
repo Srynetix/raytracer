@@ -138,8 +138,8 @@ impl Scene {
         self.size = value;
     }
 
-    pub fn render(&self, ctx: &mut Context, ray_color: impl RayShader) -> Image {
-        let mut pixels = vec![];
+    pub fn render<S: RayShader>(&self, ctx: &mut Context, shader: S) -> Image {
+        let mut pixels = vec![Color::black(); (self.size.width * self.size.height) as usize];
 
         info!(
             message = "Rendering image",
@@ -166,7 +166,7 @@ impl Scene {
                         (y as f64 + self.gen_jitter(&mut ctx.rng)) / (self.size.height - 1) as f64;
 
                     let ray = self.camera.cast_ray(ctx, u, v);
-                    color += ray_color.ray_color(ctx, &ray, &self.world, self.max_depth);
+                    color += shader.ray_color(ctx, &ray, &self.world, self.max_depth);
                 }
 
                 // Divide color
@@ -175,7 +175,8 @@ impl Scene {
                 // Gamma correction
                 color = color.map(f64::sqrt);
 
-                pixels.push(color);
+                let idx = (x + (self.size.height - y) * self.size.width) as usize;
+                pixels[idx] = color;
             }
         }
 

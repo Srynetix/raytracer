@@ -1,6 +1,6 @@
 use crate::{collider::Collider, hit_record::HitRecord, Ray};
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct World {
     colliders: Vec<Box<dyn Collider>>,
 }

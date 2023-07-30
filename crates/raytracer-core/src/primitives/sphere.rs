@@ -1,5 +1,6 @@
 use crate::{collider::Collider, hit_record::HitRecord, Material, Ray, Vec3};
 
+#[derive(Clone)]
 pub struct Sphere {
     center: Vec3,
     radius: f64,
@@ -20,11 +21,20 @@ impl Sphere {
     }
 }
 
-#[derive(Default)]
 pub struct SphereBuilder {
     center: Vec3,
     radius: f64,
     material: Option<Box<dyn Material>>,
+}
+
+impl Default for SphereBuilder {
+    fn default() -> Self {
+        Self {
+            center: Vec3::zero(),
+            radius: 1.0,
+            material: None,
+        }
+    }
 }
 
 impl SphereBuilder {
