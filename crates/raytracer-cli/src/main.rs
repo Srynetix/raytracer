@@ -14,7 +14,7 @@ fn main() {
     let seed = SeedType::Fixed(1234567890);
     let mut renderer = WindowRenderer::new();
     let mut scene = random_spheres_scene(seed);
-    // scene.set_antialias(50);
+    scene.set_antialias(50);
     scene.set_scale(0.5);
 
     let ctx = Context {

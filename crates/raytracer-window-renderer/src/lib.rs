@@ -4,7 +4,7 @@ use winit::{
     dpi::PhysicalSize,
     event::{Event, WindowEvent},
     event_loop::{ControlFlow, EventLoop},
-    window::{WindowBuilder, WindowButtons},
+    window::WindowBuilder,
 };
 
 #[derive(Default)]
@@ -28,9 +28,7 @@ impl Renderer for WindowRenderer {
         let event_loop = EventLoop::new();
         let window = WindowBuilder::new()
             .with_inner_size(PhysicalSize::new(image.width(), image.height()))
-            .with_resizable(false)
             .with_title("raytracer-window-renderer")
-            .with_enabled_buttons(WindowButtons::CLOSE | WindowButtons::MINIMIZE)
             .build(&event_loop)
             .unwrap();
 
@@ -57,8 +55,16 @@ impl Renderer for WindowRenderer {
                     event: WindowEvent::CloseRequested,
                     window_id,
                 } if window_id == window.id() => *control_flow = ControlFlow::Exit,
+                Event::WindowEvent {
+                    window_id,
+                    event: WindowEvent::Resized(size),
+                } if window_id == window.id() => {
+                    pixels.resize_surface(size.width, size.height).unwrap();
+                }
                 _ => (),
             }
+
+            window.request_redraw();
         });
     }
 }
