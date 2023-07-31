@@ -1,4 +1,4 @@
-//! Raytracer included primitives
+//! Raytracer included primitives.
 
 mod sphere;
 

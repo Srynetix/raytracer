@@ -1,4 +1,4 @@
-//! The random spheres sample from the https://raytracing.github.io/books/RayTracingInOneWeekend.html book.
+//! The random spheres sample from the <https://raytracing.github.io/books/RayTracingInOneWeekend.html> book.
 
 use raytracer_core::{
     primitives::Sphere, rand::Rng, Camera, Color, RngWrapper, Scene, SeedType, Vec3, World,
@@ -99,7 +99,7 @@ fn random_world(seed: SeedType) -> World {
     world
 }
 
-/// Generate the "random spheres" scene from the https://raytracing.github.io/books/RayTracingInOneWeekend.html book.
+/// Generate the "random spheres" scene from the <https://raytracing.github.io/books/RayTracingInOneWeekend.html> book.
 pub fn random_spheres_scene(seed: SeedType) -> Scene {
     Scene::builder((1200, 800).into())
         .with_camera(
