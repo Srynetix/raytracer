@@ -1,4 +1,4 @@
-use std::fmt::Display;
+use std::{fmt::Display, time::Instant};
 
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use rand::Rng;
@@ -150,39 +150,15 @@ impl Scene {
     }
 
     /// Render the scene.
-    pub fn render<S: RayShader>(&self, mut ctx: Context, shader: S) -> Image {
-        let mut pixels = vec![Color::BLACK; (self.size.width * self.size.height) as usize];
-
-        info!(
-            message = "Rendering image",
-            size = %self.size,
-            antialias = self.samples_per_pixel,
-            max_depth = self.max_depth
-        );
-
-        let sty = ProgressStyle::with_template("{bar:40.cyan/blue}  {msg:<20} {pos:>7}/{len:7}")
-            .unwrap()
-            .progress_chars("##-");
-
-        let pb = ProgressBar::new((self.size.width * self.size.height) as u64);
-        pb.set_style(sty.clone());
-        pb.set_message("Rendering image...");
-
-        for y in (1..self.size.height + 1).rev() {
-            for x in 0..self.size.width {
-                let idx = (x + (self.size.height - y) * self.size.width) as usize;
-                pixels[idx] = self.render_pixel(idx, &mut ctx, &shader, &pb);
-            }
-        }
-
-        Image::from_pixels(self.size.width, pixels)
+    pub fn render<S: RayShader>(&self, ctx: Context, shader: S) -> Image {
+        self.render_parallel(ctx, shader, 1)
     }
 
     /// Render the scene on multiple threads.
-    pub fn render_parallel(
+    pub fn render_parallel<S: RayShader>(
         &self,
         ctx: Context,
-        shader: &dyn RayShader,
+        shader: S,
         thread_count: u32,
     ) -> Image {
         let mut pixels = vec![Color::BLACK; (self.size.width * self.size.height) as usize];
@@ -191,7 +167,8 @@ impl Scene {
             message = "Rendering image",
             size = %self.size,
             antialias = self.samples_per_pixel,
-            max_depth = self.max_depth
+            max_depth = self.max_depth,
+            thread_count = thread_count,
         );
 
         let pixels_per_thread = (self.size.width * self.size.height / thread_count) as usize;
@@ -200,6 +177,9 @@ impl Scene {
         let sty = ProgressStyle::with_template("{bar:40.cyan/blue}  {msg:<20} {pos:>7}/{len:7}")
             .unwrap()
             .progress_chars("##-");
+
+        let shader = &shader;
+        let before_time = Instant::now();
 
         crossbeam::scope(|scope| {
             pixels
@@ -210,7 +190,12 @@ impl Scene {
 
                     let pb = m.add(ProgressBar::new(slice.len() as u64));
                     pb.set_style(sty.clone());
-                    pb.set_message(format!("Rendering chunk #{chunk_id}"));
+
+                    if thread_count == 1 {
+                        pb.set_message("Rendering image...");
+                    } else {
+                        pb.set_message(format!("Rendering chunk #{chunk_id}..."));
+                    }
 
                     scope.spawn(move |_| {
                         slice.iter_mut().enumerate().for_each(|(idx, elem)| {
@@ -223,6 +208,10 @@ impl Scene {
                 });
         })
         .unwrap();
+
+        let after_time = Instant::now();
+        let duration = (after_time - before_time).as_secs_f64();
+        info!(message = "Rendering done", duration = duration);
 
         Image::from_pixels(self.size.width, pixels)
     }

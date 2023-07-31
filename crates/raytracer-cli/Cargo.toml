@@ -10,3 +10,4 @@ raytracer-window-renderer = { path = "../raytracer-window-renderer" }
 raytracer-samples = { path = "../raytracer-samples" }
 clap = { version = "4.3.19", features = ["derive"] }
 tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }
+num_cpus = "1.16.0"
