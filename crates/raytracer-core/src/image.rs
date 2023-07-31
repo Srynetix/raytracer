@@ -1,5 +1,6 @@
 use crate::Color;
 
+/// An image, containing an array of colors.
 pub struct Image {
     width: u32,
     height: u32,
@@ -7,6 +8,7 @@ pub struct Image {
 }
 
 impl Image {
+    /// Build an image from an array of colors.
     pub fn from_pixels(width: u32, pixels: Vec<Color>) -> Self {
         let pixels_count = pixels.len();
         if pixels_count < width as usize {
@@ -22,14 +24,17 @@ impl Image {
         }
     }
 
+    /// Get the image width.
     pub fn width(&self) -> u32 {
         self.width
     }
 
+    /// Get the image height.
     pub fn height(&self) -> u32 {
         self.height
     }
 
+    /// Get the image pixels.
     pub fn pixels(&self) -> &[Color] {
         &self.data
     }

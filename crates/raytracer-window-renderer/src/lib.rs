@@ -1,16 +1,22 @@
+//! Raytracer window renderer.
+
+#![forbid(missing_docs)]
+
 use pixels::{Pixels, SurfaceTexture};
 use raytracer_core::{Image, Renderer};
 use winit::{
     dpi::PhysicalSize,
     event::{Event, WindowEvent},
     event_loop::{ControlFlow, EventLoop},
-    window::{WindowBuilder, WindowButtons},
+    window::WindowBuilder,
 };
 
+/// Window renderer.
 #[derive(Default)]
-pub struct GpuRenderer;
+pub struct WindowRenderer;
 
-impl GpuRenderer {
+impl WindowRenderer {
+    /// Create a new window renderer.
     pub fn new() -> Self {
         Default::default()
     }
@@ -18,19 +24,17 @@ impl GpuRenderer {
     fn render_image(image: &Image, pixels: &mut [u8]) {
         for (idx, p) in pixels.chunks_exact_mut(4).enumerate() {
             let pixel = image.pixels()[idx];
-            p.copy_from_slice(&pixel.to_u8_array());
+            p.copy_from_slice(&pixel.to_u8x4());
         }
     }
 }
 
-impl Renderer for GpuRenderer {
+impl Renderer for WindowRenderer {
     fn render(&mut self, image: &raytracer_core::Image) -> Result<(), std::io::Error> {
         let event_loop = EventLoop::new();
         let window = WindowBuilder::new()
             .with_inner_size(PhysicalSize::new(image.width(), image.height()))
-            .with_resizable(false)
-            .with_title("raytracer-gpu-renderer")
-            .with_enabled_buttons(WindowButtons::CLOSE | WindowButtons::MINIMIZE)
+            .with_title("raytracer-window-renderer")
             .build(&event_loop)
             .unwrap();
 
@@ -48,13 +52,25 @@ impl Renderer for GpuRenderer {
         event_loop.run(move |event, _, control_flow| {
             *control_flow = ControlFlow::Wait;
 
+            if let Event::RedrawRequested(_) = event {
+                pixels.render().unwrap();
+            }
+
             match event {
                 Event::WindowEvent {
                     event: WindowEvent::CloseRequested,
                     window_id,
                 } if window_id == window.id() => *control_flow = ControlFlow::Exit,
+                Event::WindowEvent {
+                    window_id,
+                    event: WindowEvent::Resized(size),
+                } if window_id == window.id() => {
+                    pixels.resize_surface(size.width, size.height).unwrap();
+                }
                 _ => (),
             }
+
+            window.request_redraw();
         });
     }
 }

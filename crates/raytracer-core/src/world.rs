@@ -1,54 +1,62 @@
-use crate::{hit_record::HitRecord, hittable::Hittable, Ray};
+use crate::{collider::Collider, hit_record::HitRecord, Ray};
 
-#[derive(Default)]
+/// World, contains colliders.
+#[derive(Default, Clone)]
 pub struct World {
-    hittables: Vec<Box<dyn Hittable>>,
+    colliders: Vec<Box<dyn Collider>>,
 }
 
 impl World {
+    /// Build an empty world.
     pub fn new() -> Self {
-        Self { hittables: vec![] }
+        Self { colliders: vec![] }
     }
 
+    /// Create a world builder.
     pub fn builder() -> WorldBuilder {
         WorldBuilder::new()
     }
 
-    pub fn add_hittable(&mut self, element: Box<dyn Hittable>) {
-        self.hittables.push(element)
+    /// Add a collider to the world.
+    pub fn add_collider<C: Collider + 'static>(&mut self, element: C) {
+        self.colliders.push(Box::new(element));
     }
 }
 
+/// World builder.
 #[derive(Default)]
 pub struct WorldBuilder {
-    hittables: Vec<Box<dyn Hittable>>,
+    colliders: Vec<Box<dyn Collider>>,
 }
 
 impl WorldBuilder {
+    /// Create a world builder.
     pub fn new() -> Self {
         Default::default()
     }
 
-    pub fn with_hittable(mut self, element: Box<dyn Hittable>) -> Self {
-        self.hittables.push(element);
+    /// Add a collider to the world.
+    pub fn with_collider<C: Collider + 'static>(mut self, element: C) -> Self {
+        self.colliders.push(Box::new(element));
         self
     }
 
+    /// Build the world.
     pub fn build(self) -> World {
         World {
-            hittables: self.hittables,
+            colliders: self.colliders,
         }
     }
 }
 
-impl Hittable for World {
-    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+impl Collider for World {
+    fn hit<'a>(&'a self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord<'a>> {
         let mut record = HitRecord::default();
         let mut hit_anything = false;
         let mut closest = t_max;
 
-        for hittable in &self.hittables {
-            if let Some(hit_record) = hittable.hit(ray, t_min, closest) {
+        for collider in &self.colliders {
+            if let Some(hit_record) = collider.hit(ray, t_min, closest) {
                 hit_anything = true;
                 closest = hit_record.t;
                 record = hit_record;

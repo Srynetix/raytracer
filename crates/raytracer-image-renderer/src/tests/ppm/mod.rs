@@ -12,14 +12,14 @@ fn source_image(width: u32) -> Image {
     Image::from_pixels(
         width,
         vec![
-            Color::from_rgb(0, 0, 0),
-            Color::from_rgb(0, 0, 255),
-            Color::from_rgb(0, 255, 0),
-            Color::from_rgb(0, 255, 255),
-            Color::from_rgb(255, 0, 0),
-            Color::from_rgb(255, 0, 255),
-            Color::from_rgb(255, 255, 0),
-            Color::from_rgb(255, 255, 255),
+            Color::from_u8x3(0, 0, 0),
+            Color::from_u8x3(0, 0, 255),
+            Color::from_u8x3(0, 255, 0),
+            Color::from_u8x3(0, 255, 255),
+            Color::from_u8x3(255, 0, 0),
+            Color::from_u8x3(255, 0, 255),
+            Color::from_u8x3(255, 255, 0),
+            Color::from_u8x3(255, 255, 255),
         ],
     )
 }
